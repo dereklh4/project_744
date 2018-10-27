@@ -5,6 +5,7 @@ import numpy as np
 # from tensorflow.core.protobuf import saved_model_pb2
 from tensorflow.python.util import compat
 from datetime import datetime
+import os
 
 #option 1 - use timeline
 from tensorflow.python.client import timeline
@@ -15,6 +16,15 @@ from tensorflow.python.client import timeline
 #option 3 - profiler
 #https://gist.github.com/notoraptor/4cfeaaf2ab24ebce59ac727f389096fa
 
+try:
+	os.mkdir("./profiler")
+except:
+	pass
+
+try:
+	os.mkdir("./timelines")
+except:
+	pass
 
 model_filename =sys.argv[1]
 with gfile.FastGFile(model_filename, 'rb') as f:
