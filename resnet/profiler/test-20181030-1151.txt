@@ -1,0 +1,170 @@
+
+Doc:
+op: The nodes are operation kernel type, such as MatMul, Conv2D. Graph nodes belonging to the same type are aggregated together.
+accelerator execution time: Time spent executing on the accelerator. This is normally measured by the actual hardware library.
+cpu execution time: The time from the start to the end of the operation. It's the sum of actual cpu run time plus the time that it spends waiting if part of computation is launched asynchronously.
+device: which device is placed on.
+flops: Number of float operations. Note: Please read the implementation for the math behind it.
+input shape: The shape of input tensors
+total execution time: Sum of accelerator execution time and cpu execution time.
+cpu execution time: The time from the start to the end of the operation. It's the sum of actual cpu run time plus the time that it spends waiting if part of computation is launched asynchronously.
+accelerator execution time: Time spent executing on the accelerator. This is normally measured by the actual hardware library.
+occurrence: The number of times it occurs
+op_types: The attributes of the operation, includes the Kernel name device placed on and user-defined strings.
+output bytes: The memory that is output from the operation (not necessarilty allocated by the operation)
+param: Number of parameters (in the Variable).
+peak bytes: The peak amount of memory that the operation is holding at some point.
+residual bytes: The memory not de-allocated after the operation finishes.
+tensor_value: Not supported now.
+
+Profile:
+node name | peak bytes | residual bytes | output bytes | total execution time | accelerator execution time | cpu execution time | # parameters | # float_ops | assigned devices | op types | op occurrence (run|defined) | input shapes
+Conv2D                        35.87MB (100.00%, 19.76%),      35.87MB (100.00%, 19.76%),      35.87MB (100.00%, 13.51%),     10.43sec (100.00%, 90.35%),             0us (0.00%, 0.00%),     10.43sec (100.00%, 90.35%),        0 params (0.00%, 0.00%), 11.42b float_ops (100.00%, 99.79%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|Conv2D,      94|94
+
+input_type: 0:1x17x17x768,	1:1x1x768x192	(run*12|defined*12)	exec_time: 1.61sec
+input_type: 0:1x8x8x384,	1:3x1x384x384	(run*4|defined*4)	exec_time: 264.86ms
+input_type: 0:1x17x17x192,	1:1x7x192x192	(run*4|defined*4)	exec_time: 440.95ms
+input_type: 0:1x8x8x384,	1:1x3x384x384	(run*4|defined*4)	exec_time: 274.36ms
+input_type: 0:1x35x35x288,	1:1x1x288x64	(run*4|defined*4)	exec_time: 251.87ms
+input_type: 0:1x35x35x96,	1:3x3x96x96	(run*4|defined*4)	exec_time: 392.84ms
+input_type: 0:1x17x17x160,	1:1x7x160x160	(run*4|defined*4)	exec_time: 401.16ms
+input_type: 0:1x35x35x64,	1:3x3x64x96	(run*4|defined*4)	exec_time: 523.78ms
+input_type: 0:1x17x17x160,	1:7x1x160x160	(run*4|defined*4)	exec_time: 347.39ms
+input_type: 0:1x17x17x768,	1:1x1x768x160	(run*4|defined*4)	exec_time: 520.15ms
+input_type: 0:1x17x17x192,	1:7x1x192x192	(run*4|defined*4)	exec_time: 438.55ms
+input_type: 0:1x35x35x256,	1:1x1x256x64	(run*3|defined*3)	exec_time: 186.98ms
+input_type: 0:1x35x35x48,	1:5x5x48x64	(run*3|defined*3)	exec_time: 533.55ms
+input_type: 0:1x8x8x448,	1:3x3x448x384	(run*2|defined*2)	exec_time: 285.67ms
+input_type: 0:1x17x17x768,	1:1x1x768x128	(run*2|defined*2)	exec_time: 224.68ms
+input_type: 0:1x17x17x160,	1:7x1x160x192	(run*2|defined*2)	exec_time: 210.52ms
+input_type: 0:1x17x17x160,	1:1x7x160x192	(run*2|defined*2)	exec_time: 117.24ms
+input_type: 0:1x17x17x128,	1:7x1x128x128	(run*2|defined*2)	exec_time: 112.90ms
+input_type: 0:1x17x17x128,	1:1x7x128x128	(run*2|defined*2)	exec_time: 139.90ms
+input_type: 0:1x35x35x192,	1:1x1x192x64	(run*2|defined*2)	exec_time: 109.90ms
+input_type: 0:1x35x35x192,	1:1x1x192x48	(run*1|defined*1)	exec_time: 36.68ms
+input_type: 0:1x147x147x32,	1:3x3x32x64	(run*1|defined*1)	exec_time: 380.46ms
+input_type: 0:1x35x35x192,	1:1x1x192x32	(run*1|defined*1)	exec_time: 22.89ms
+input_type: 0:1x35x35x288,	1:1x1x288x48	(run*1|defined*1)	exec_time: 67.98ms
+input_type: 0:1x299x299x3,	1:3x3x3x32	(run*1|defined*1)	exec_time: 23.80ms
+input_type: 0:1x35x35x288,	1:3x3x288x384	(run*1|defined*1)	exec_time: 382.15ms
+input_type: 0:1x17x17x192,	1:3x3x192x320	(run*1|defined*1)	exec_time: 79.70ms
+input_type: 0:1x17x17x192,	1:3x3x192x192	(run*1|defined*1)	exec_time: 20.39ms
+input_type: 0:1x17x17x128,	1:7x1x128x192	(run*1|defined*1)	exec_time: 77.04ms
+input_type: 0:1x73x73x64,	1:1x1x64x80	(run*1|defined*1)	exec_time: 26.57ms
+input_type: 0:1x73x73x80,	1:3x3x80x192	(run*1|defined*1)	exec_time: 653.25ms
+input_type: 0:1x8x8x1280,	1:1x1x1280x192	(run*1|defined*1)	exec_time: 65.12ms
+input_type: 0:1x8x8x1280,	1:1x1x1280x320	(run*1|defined*1)	exec_time: 93.67ms
+input_type: 0:1x8x8x1280,	1:1x1x1280x384	(run*1|defined*1)	exec_time: 107.14ms
+input_type: 0:1x8x8x1280,	1:1x1x1280x448	(run*1|defined*1)	exec_time: 106.02ms
+input_type: 0:1x8x8x2048,	1:1x1x2048x192	(run*1|defined*1)	exec_time: 107.89ms
+input_type: 0:1x8x8x2048,	1:1x1x2048x320	(run*1|defined*1)	exec_time: 154.57ms
+input_type: 0:1x8x8x2048,	1:1x1x2048x384	(run*1|defined*1)	exec_time: 163.61ms
+input_type: 0:1x8x8x2048,	1:1x1x2048x448	(run*1|defined*1)	exec_time: 174.71ms
+input_type: 0:1x17x17x128,	1:1x7x128x192	(run*1|defined*1)	exec_time: 46.70ms
+input_type: 0:1x149x149x32,	1:3x3x32x32	(run*1|defined*1)	exec_time: 196.35ms
+input_type: 0:1x35x35x256,	1:1x1x256x48	(run*1|defined*1)	exec_time: 53.95ms
+
+BatchNormWithGlobalNormalization      35.87MB (80.24%, 19.76%),       35.87MB (80.24%, 19.76%),       35.87MB (86.49%, 13.51%),        683.40ms (9.65%, 5.92%),             0us (0.00%, 0.00%),        683.40ms (9.65%, 5.92%),        0 params (0.00%, 0.00%),     0 float_ops (0.21%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|BatchNormWithGlobalNormalization,      94|94
+
+input_type: 0:1x17x17x192,	1:192,	2:192,	3:192,	4:192	(run*26|defined*26)	exec_time: 169.50ms
+input_type: 0:1x8x8x384,	1:384,	2:384,	3:384,	4:384	(run*12|defined*12)	exec_time: 24.28ms
+input_type: 0:1x17x17x160,	1:160,	2:160,	3:160,	4:160	(run*12|defined*12)	exec_time: 80.44ms
+input_type: 0:1x35x35x64,	1:64,	2:64,	3:64,	4:64	(run*12|defined*12)	exec_time: 163.15ms
+input_type: 0:1x35x35x96,	1:96,	2:96,	3:96,	4:96	(run*7|defined*7)	exec_time: 46.11ms
+input_type: 0:1x17x17x128,	1:128,	2:128,	3:128,	4:128	(run*6|defined*6)	exec_time: 44.48ms
+input_type: 0:1x8x8x192,	1:192,	2:192,	3:192,	4:192	(run*3|defined*3)	exec_time: 30.17ms
+input_type: 0:1x8x8x320,	1:320,	2:320,	3:320,	4:320	(run*3|defined*3)	exec_time: 14.94ms
+input_type: 0:1x35x35x48,	1:48,	2:48,	3:48,	4:48	(run*3|defined*3)	exec_time: 44.09ms
+input_type: 0:1x8x8x448,	1:448,	2:448,	3:448,	4:448	(run*2|defined*2)	exec_time: 9.32ms
+input_type: 0:1x35x35x32,	1:32,	2:32,	3:32,	4:32	(run*1|defined*1)	exec_time: 9.95ms
+input_type: 0:1x17x17x96,	1:96,	2:96,	3:96,	4:96	(run*1|defined*1)	exec_time: 10.37ms
+input_type: 0:1x71x71x192,	1:192,	2:192,	3:192,	4:192	(run*1|defined*1)	exec_time: 8.71ms
+input_type: 0:1x73x73x80,	1:80,	2:80,	3:80,	4:80	(run*1|defined*1)	exec_time: 3.63ms
+input_type: 0:1x17x17x384,	1:384,	2:384,	3:384,	4:384	(run*1|defined*1)	exec_time: 958us
+input_type: 0:1x149x149x32,	1:32,	2:32,	3:32,	4:32	(run*1|defined*1)	exec_time: 5.97ms
+input_type: 0:1x147x147x64,	1:64,	2:64,	3:64,	4:64	(run*1|defined*1)	exec_time: 11.64ms
+input_type: 0:1x147x147x32,	1:32,	2:32,	3:32,	4:32	(run*1|defined*1)	exec_time: 5.67ms
+
+AvgPool                          7.49MB (60.47%, 4.13%),         7.49MB (60.47%, 4.13%),         7.49MB (72.97%, 2.82%),        251.25ms (3.73%, 2.18%),             0us (0.00%, 0.00%),        251.25ms (3.73%, 2.18%),        0 params (0.00%, 0.00%), 16.97m float_ops (0.21%, 0.15%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|AvgPool,        9|9
+
+input_type: 0:1x17x17x768	(run*4|defined*4)	exec_time: 110.49ms
+input_type: 0:1x35x35x192	(run*1|defined*1)	exec_time: 36.94ms
+input_type: 0:1x35x35x256	(run*1|defined*1)	exec_time: 42.99ms
+input_type: 0:1x35x35x288	(run*1|defined*1)	exec_time: 48.76ms
+input_type: 0:1x8x8x1280	(run*1|defined*1)	exec_time: 11.50ms
+input_type: 0:1x8x8x2048	(run*1|defined*1)	exec_time: 574us
+
+MaxPool                          3.36MB (56.34%, 1.85%),         3.36MB (56.34%, 1.85%),         3.36MB (70.15%, 1.27%),         69.32ms (1.55%, 0.60%),             0us (0.00%, 0.00%),         69.32ms (1.55%, 0.60%),        0 params (0.00%, 0.00%), 7.56m float_ops (0.07%, 0.07%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|MaxPool,        5|5
+
+input_type: 0:1x147x147x64	(run*1|defined*1)	exec_time: 32.15ms
+input_type: 0:1x17x17x768	(run*1|defined*1)	exec_time: 4.39ms
+input_type: 0:1x35x35x288	(run*1|defined*1)	exec_time: 8.76ms
+input_type: 0:1x71x71x192	(run*1|defined*1)	exec_time: 14.39ms
+input_type: 0:1x8x8x2048	(run*1|defined*1)	exec_time: 9.63ms
+
+CheckNumerics                         0B (0.00%, 0.00%),              0B (0.00%, 0.00%),       48.10MB (68.89%, 18.12%),         57.50ms (0.95%, 0.50%),             0us (0.00%, 0.00%),         57.50ms (0.95%, 0.50%),        0 params (0.00%, 0.00%),     0 float_ops (0.00%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|CheckNumerics,      99|99
+
+input_type: 0:1x17x17x192	(run*26|defined*26)	exec_time: 8.62ms
+input_type: 0:1x35x35x64	(run*12|defined*12)	exec_time: 6.48ms
+input_type: 0:1x8x8x384	(run*12|defined*12)	exec_time: 1.74ms
+input_type: 0:1x17x17x160	(run*12|defined*12)	exec_time: 3.54ms
+input_type: 0:1x35x35x96	(run*7|defined*7)	exec_time: 4.47ms
+input_type: 0:1x17x17x128	(run*6|defined*6)	exec_time: 1.29ms
+input_type: 0:1x35x35x48	(run*3|defined*3)	exec_time: 1.18ms
+input_type: 0:1x8x8x192	(run*3|defined*3)	exec_time: 233us
+input_type: 0:1x8x8x320	(run*3|defined*3)	exec_time: 448us
+input_type: 0:1x71x71x192	(run*2|defined*2)	exec_time: 6.98ms
+input_type: 0:1x147x147x64	(run*2|defined*2)	exec_time: 9.94ms
+input_type: 0:1x8x8x448	(run*2|defined*2)	exec_time: 381us
+input_type: 0:1x147x147x32	(run*1|defined*1)	exec_time: 2.55ms
+input_type: 0:1x35x35x288	(run*1|defined*1)	exec_time: 2.39ms
+input_type: 0:1x17x17x96	(run*1|defined*1)	exec_time: 202us
+input_type: 0:1x73x73x80	(run*1|defined*1)	exec_time: 1.53ms
+input_type: 0:1x17x17x768	(run*1|defined*1)	exec_time: 1.47ms
+input_type: 0:1x8x8x2048	(run*1|defined*1)	exec_time: 813us
+input_type: 0:1x17x17x384	(run*1|defined*1)	exec_time: 402us
+input_type: 0:1x149x149x32	(run*1|defined*1)	exec_time: 2.58ms
+input_type: 0:1x35x35x32	(run*1|defined*1)	exec_time: 271us
+
+Relu                                  0B (0.00%, 0.00%),              0B (0.00%, 0.00%),       35.87MB (50.77%, 13.51%),         46.45ms (0.45%, 0.40%),             0us (0.00%, 0.00%),         46.45ms (0.45%, 0.40%),        0 params (0.00%, 0.00%),     0 float_ops (0.00%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|Relu,      94|94
+
+input_type: 0:1x17x17x192	(run*26|defined*26)	exec_time: 7.77ms
+input_type: 0:1x8x8x384	(run*12|defined*12)	exec_time: 1.60ms
+input_type: 0:1x17x17x160	(run*12|defined*12)	exec_time: 3.15ms
+input_type: 0:1x35x35x64	(run*12|defined*12)	exec_time: 6.12ms
+input_type: 0:1x35x35x96	(run*7|defined*7)	exec_time: 16.57ms
+input_type: 0:1x17x17x128	(run*6|defined*6)	exec_time: 1.19ms
+input_type: 0:1x8x8x192	(run*3|defined*3)	exec_time: 218us
+input_type: 0:1x8x8x320	(run*3|defined*3)	exec_time: 403us
+input_type: 0:1x35x35x48	(run*3|defined*3)	exec_time: 1.05ms
+input_type: 0:1x8x8x448	(run*2|defined*2)	exec_time: 346us
+input_type: 0:1x35x35x32	(run*1|defined*1)	exec_time: 244us
+input_type: 0:1x17x17x96	(run*1|defined*1)	exec_time: 180us
+input_type: 0:1x71x71x192	(run*1|defined*1)	exec_time: 1.70ms
+input_type: 0:1x73x73x80	(run*1|defined*1)	exec_time: 778us
+input_type: 0:1x17x17x384	(run*1|defined*1)	exec_time: 237us
+input_type: 0:1x149x149x32	(run*1|defined*1)	exec_time: 1.24ms
+input_type: 0:1x147x147x64	(run*1|defined*1)	exec_time: 2.41ms
+input_type: 0:1x147x147x32	(run*1|defined*1)	exec_time: 1.25ms
+
+Concat                           9.89MB (54.49%, 5.45%),         9.89MB (54.49%, 5.45%),         9.89MB (37.26%, 3.73%),          2.26ms (0.05%, 0.02%),             0us (0.00%, 0.00%),          2.26ms (0.05%, 0.02%),        0 params (0.00%, 0.00%),     0 float_ops (0.00%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|Concat,      11|11
+
+input_type: 0:1,	1:1x17x17x192,	2:1x17x17x192,	3:1x17x17x192,	4:1x17x17x192	(run*4|defined*4)	exec_time: 716us
+input_type: 0:1,	1:1x35x35x64,	2:1x35x35x64,	3:1x35x35x96,	4:1x35x35x64	(run*2|defined*2)	exec_time: 650us
+input_type: 0:1,	1:1x8x8x320,	2:1x8x8x384,	3:1x8x8x384,	4:1x8x8x384,	5:1x8x8x384,	6:1x8x8x192	(run*2|defined*2)	exec_time: 264us
+input_type: 0:1,	1:1x17x17x384,	2:1x17x17x96,	3:1x17x17x288	(run*1|defined*1)	exec_time: 198us
+input_type: 0:1,	1:1x35x35x64,	2:1x35x35x64,	3:1x35x35x96,	4:1x35x35x32	(run*1|defined*1)	exec_time: 283us
+input_type: 0:1,	1:1x8x8x320,	2:1x8x8x192,	3:1x8x8x768	(run*1|defined*1)	exec_time: 148us
+
+Cast                           714.43KB (49.04%, 0.39%),       714.43KB (49.04%, 0.39%),       714.43KB (33.53%, 0.27%),          2.13ms (0.03%, 0.02%),             0us (0.00%, 0.00%),          2.13ms (0.03%, 0.02%),        0 params (0.00%, 0.00%),     0 float_ops (0.00%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|Cast,        1|1
+
+input_type: 0:-1x-1x3	(run*1|defined*1)	exec_time: 2.13ms
+
+ResizeBilinear                   1.07MB (48.65%, 0.59%),         1.07MB (48.65%, 0.59%),         1.07MB (33.26%, 0.40%),          1.10ms (0.01%, 0.01%),             0us (0.00%, 0.00%),          1.10ms (0.01%, 0.01%),        0 params (0.00%, 0.00%),     0 float_ops (0.00%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|ResizeBilinear,        1|1
+
+input_type: 0:1x-1x-1x3,	1:2	(run*1|defined*1)	exec_time: 1.10ms
+
+Const                          87.22MB (48.06%, 48.06%),       87.22MB (48.06%, 48.06%),       87.22MB (32.86%, 32.86%),           517us (0.00%, 0.00%),             0us (0.00%, 0.00%),           517us (0.00%, 0.00%),        0 params (0.00%, 0.00%),     0 float_ops (0.00%, 0.00%), |/job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|Const,    392|489
+
+input_type: 	(run*392|defined*489)	exec_time: 517us
+
