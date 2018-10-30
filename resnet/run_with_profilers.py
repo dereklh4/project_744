@@ -46,7 +46,7 @@ with tf.Session() as sess:
 	# Option 3: Profiler
 	profiler = tf.profiler.Profiler(sess.graph)
 
-	for i in range(5):
+	for i in range(6):
 		out_val = sess.run(flat_tensor, {'DecodeJpeg:0': np.random.ranf((244,244,3))},options=run_options,run_metadata=run_metadata)
 
 		#option 2
@@ -68,6 +68,6 @@ with tf.Session() as sess:
 	opts = (option_builder(option_builder.time_and_memory()).
 			with_step(-1). # with -1, should compute the average of all registered steps.
 			with_file_output("profiler/test-" + current_time + ".txt").
-			select(['micros','bytes','occurrence']).order_by('micros').
+			select(["peak_bytes","residual_bytes","output_bytes","micros","accelerator_micros","cpu_micros","params","float_ops","occurrence","tensor_value","device","op_types","input_shapes"]).order_by("micros").
 			build())
 	profiler.profile_operations(options=opts)
