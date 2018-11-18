@@ -28,20 +28,24 @@ time_units = {
 flops_units = {
     'b' : 1000,
     'm' : 1,
-    'k': 10**(-3)
+    'k': 10**(-3),
+    'empty': 10**(-6)
 }
 
 
 line_sub = re.compile('\(\d*\.?\d+%, \d*\.?\d+%\)')
 cell_split = re.compile('')
 
-val_unit_re = re.compile('(\d*\.?\d+)(\S+)')
+val_unit_re = re.compile('(\d*\.?\d+)([a-zA-Z]+)')
 
 def val_unit(cell):
     print(cell)
     cell  = cell.strip()
     m = val_unit_re.search(cell)
-    return (m.group(1), m.group(2))
+    if m != None:
+        return (m.group(1), m.group(2))
+    else:
+        return (cell, 'empty')
     
 def convert_mem(val, unit, desired_unit):
     return float(val) * (mem_units[unit.upper()]) / mem_units[desired_unit.upper()]
@@ -75,6 +79,7 @@ def parse_line(line, mem_unit, t_unit, flops_unit):
     cells[7] = cells[7].split()[0].strip()
     #ops 
     cell = cells[8].split()[0].strip()
+    print(cell)
     if cell != '0':
         val, unit = val_unit(cell)
         cells[8] = convert_flops(val, unit, flops_unit)
