@@ -1,0 +1,81 @@
+('adadelta_rho', 0.95)
+('save_summaries_secs', 600)
+('quantize_delay', -1)
+('optimizer', 'rmsprop')
+('rmsprop_decay', 0.9)
+('rmsprop_momentum', 0.9)
+('adam_beta2', 0.999)
+('master', '')
+('checkpoint_path', None)
+('ftrl_l2', 0.0)
+('learning_rate_decay_type', 'exponential')
+('moving_average_decay', None)
+('num_readers', 4)
+('worker_replicas', 1)
+('sync_replicas', False)
+('ftrl_learning_rate_power', -0.5)
+('helpfull', False)
+('dataset_split_name', 'train')
+('opt_epsilon', 1.0)
+('batch_size', 4)
+('adagrad_initial_accumulator_value', 0.1)
+('label_smoothing', 0.0)
+('task', 0)
+('max_number_of_steps', None)
+('labels_offset', 0)
+('num_ps_tasks', 0)
+('learning_rate', 0.01)
+('learning_rate_decay_factor', 0.94)
+('checkpoint_exclude_scopes', None)
+('preprocessing_name', None)
+('adam_beta1', 0.9)
+('ftrl_l1', 0.0)
+('train_dir', '/tmp/train_logs')
+('h', False)
+('trainable_scopes', None)
+('num_preprocessing_threads', 4)
+('help', False)
+('replicas_to_aggregate', 1)
+('ftrl_initial_accumulator_value', 0.1)
+('helpshort', False)
+('num_epochs_per_decay', 2.0)
+('number_of_steps', 3)
+('end_learning_rate', 0.0001)
+('num_clones', 1)
+('dataset_name', 'cifar10')
+('log_every_n_steps', 10)
+('ignore_missing_vars', False)
+('clone_on_cpu', True)
+('momentum', 0.9)
+('weight_decay', 4e-05)
+('model_name', 'mobilenet_v2')
+('save_interval_secs', 600)
+('dataset_dir', './data/cifar10')
+('train_image_size', None)
+
+Doc:
+op: The nodes are operation kernel type, such as MatMul, Conv2D. Graph nodes belonging to the same type are aggregated together.
+accelerator execution time: Time spent executing on the accelerator. This is normally measured by the actual hardware library.
+cpu execution time: The time from the start to the end of the operation. It's the sum of actual cpu run time plus the time that it spends waiting if part of computation is launched asynchronously.
+device: which device is placed on.
+flops: Number of float operations. Note: Please read the implementation for the math behind it.
+total execution time: Sum of accelerator execution time and cpu execution time.
+cpu execution time: The time from the start to the end of the operation. It's the sum of actual cpu run time plus the time that it spends waiting if part of computation is launched asynchronously.
+accelerator execution time: Time spent executing on the accelerator. This is normally measured by the actual hardware library.
+occurrence: The number of times it occurs
+op_types: The attributes of the operation, includes the Kernel name device placed on and user-defined strings.
+output bytes: The memory that is output from the operation (not necessarilty allocated by the operation)
+param: Number of parameters (in the Variable).
+peak bytes: The peak amount of memory that the operation is holding at some point.
+residual bytes: The memory not de-allocated after the operation finishes.
+tensor_value: Not supported now.
+
+Profile:
+node name | peak bytes | residual bytes | output bytes | total execution time | accelerator execution time | cpu execution time | # parameters | # float_ops | assigned devices | op types | op occurrence (run|defined)
+RestoreV2                     26.98MB (100.00%, 39.96%),      26.98MB (100.00%, 39.96%),      26.98MB (100.00%, 40.00%),     223.50ms (100.00%, 56.88%),             0us (0.00%, 0.00%),     223.50ms (100.00%, 56.88%),      0 params (100.00%, 0.00%),     0 float_ops (0.00%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|RestoreV2,        1|1
+Assign                         26.98MB (60.04%, 39.96%),       26.98MB (60.04%, 39.96%),       26.98MB (60.00%, 40.00%),      132.96ms (43.12%, 33.84%),             0us (0.00%, 0.00%),      132.96ms (43.12%, 33.84%),      0 params (100.00%, 0.00%),     0 float_ops (0.00%, 0.00%), |/job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|Assign,   579|1158
+VariableV2                     13.49MB (20.09%, 19.98%),       13.49MB (20.09%, 19.98%),       13.49MB (20.01%, 20.00%),         27.75ms (9.28%, 7.06%),             0us (0.00%, 0.00%),         27.75ms (9.28%, 7.06%), 6.74m params (100.00%, 100.00%),     0 float_ops (0.00%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|VariableV2|_trainable_variables,    579|579
+IsVariableInitialized               579B (0.11%, 0.00%),            579B (0.11%, 0.00%),            579B (0.01%, 0.00%),          7.72ms (2.21%, 1.96%),             0us (0.00%, 0.00%),          7.72ms (2.21%, 1.96%),        0 params (0.00%, 0.00%),     0 float_ops (0.00%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|IsVariableInitialized,    579|579
+Pack                                579B (0.11%, 0.00%),            579B (0.11%, 0.00%),            579B (0.01%, 0.00%),           701us (0.25%, 0.18%),             0us (0.00%, 0.00%),           701us (0.25%, 0.18%),        0 params (0.00%, 0.00%),     0 float_ops (0.00%, 0.00%), |/job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|Pack,        1|6
+Const                            71.33KB (0.11%, 0.11%),         71.33KB (0.11%, 0.11%),          6.95KB (0.01%, 0.01%),           179us (0.07%, 0.05%),             0us (0.00%, 0.00%),           179us (0.07%, 0.05%),        0 params (0.00%, 0.00%),     0 float_ops (0.00%, 0.00%), |/job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|Const,     4|1942
+Where                                16B (0.00%, 0.00%),              0B (0.00%, 0.00%),              0B (0.00%, 0.00%),            94us (0.02%, 0.02%),             0us (0.00%, 0.00%),            94us (0.02%, 0.02%),        0 params (0.00%, 0.00%),     0 float_ops (0.00%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|Where,        1|1
