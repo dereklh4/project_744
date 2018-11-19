@@ -1,0 +1,79 @@
+adagrad_initial_accumulator_value
+learning_rate_decay_factor
+help
+dataset_split_name
+clone_on_cpu
+dataset_dir
+ftrl_initial_accumulator_value
+ftrl_learning_rate_power
+number_of_steps
+num_clones
+labels_offset
+worker_replicas
+rmsprop_decay
+log_every_n_steps
+weight_decay
+end_learning_rate
+trainable_scopes
+checkpoint_path
+save_summaries_secs
+rmsprop_momentum
+master
+num_readers
+replicas_to_aggregate
+learning_rate
+momentum
+opt_epsilon
+num_preprocessing_threads
+helpfull
+learning_rate_decay_type
+optimizer
+preprocessing_name
+num_epochs_per_decay
+helpshort
+label_smoothing
+adam_beta1
+adam_beta2
+batch_size
+save_interval_secs
+ftrl_l1
+ftrl_l2
+task
+num_ps_tasks
+train_image_size
+h
+train_dir
+moving_average_decay
+sync_replicas
+model_name
+quantize_delay
+adadelta_rho
+checkpoint_exclude_scopes
+ignore_missing_vars
+max_number_of_steps
+dataset_name
+
+Doc:
+op: The nodes are operation kernel type, such as MatMul, Conv2D. Graph nodes belonging to the same type are aggregated together.
+accelerator execution time: Time spent executing on the accelerator. This is normally measured by the actual hardware library.
+cpu execution time: The time from the start to the end of the operation. It's the sum of actual cpu run time plus the time that it spends waiting if part of computation is launched asynchronously.
+device: which device is placed on.
+flops: Number of float operations. Note: Please read the implementation for the math behind it.
+total execution time: Sum of accelerator execution time and cpu execution time.
+cpu execution time: The time from the start to the end of the operation. It's the sum of actual cpu run time plus the time that it spends waiting if part of computation is launched asynchronously.
+accelerator execution time: Time spent executing on the accelerator. This is normally measured by the actual hardware library.
+occurrence: The number of times it occurs
+op_types: The attributes of the operation, includes the Kernel name device placed on and user-defined strings.
+output bytes: The memory that is output from the operation (not necessarilty allocated by the operation)
+param: Number of parameters (in the Variable).
+peak bytes: The peak amount of memory that the operation is holding at some point.
+residual bytes: The memory not de-allocated after the operation finishes.
+tensor_value: Not supported now.
+
+Profile:
+node name | peak bytes | residual bytes | output bytes | total execution time | accelerator execution time | cpu execution time | # parameters | # float_ops | assigned devices | op types | op occurrence (run|defined)
+QueueCloseV2                          0B (0.00%, 0.00%),              0B (0.00%, 0.00%),              0B (0.00%, 0.00%),        236us (100.00%, 48.36%),           0us (100.00%, 0.00%),        236us (100.00%, 50.21%),      0 params (100.00%, 0.00%),   0 float_ops (100.00%, 0.00%), |/job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|QueueCloseV2,        1|8
+GreaterEqual                      256B (100.00%, 1.12%),          256B (100.00%, 1.12%),         256B (100.00%, 28.32%),         178us (51.64%, 36.48%),        18us (100.00%, 100.00%),         160us (49.79%, 34.04%),      0 params (100.00%, 0.00%), 1 float_ops (100.00%, 100.00%), /job:localhost/replica:0/task:0/device:gpu:0, /job:localhost/replica:0/task:0/device:gpu:0|GreaterEqual,        1|1
+RandomShuffleQueueV2           22.13KB (98.88%, 96.65%),       22.13KB (98.88%, 96.65%),          136B (71.68%, 15.04%),           33us (15.16%, 6.76%),             0us (0.00%, 0.00%),           33us (15.74%, 7.02%),      0 params (100.00%, 0.00%),     0 float_ops (0.00%, 0.00%), /job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|RandomShuffleQueueV2,        1|1
+Const                               256B (2.24%, 1.12%),            256B (2.24%, 1.12%),          256B (56.64%, 28.32%),            24us (8.40%, 4.92%),             0us (0.00%, 0.00%),            24us (8.72%, 5.11%),      0 params (100.00%, 0.00%),     0 float_ops (0.00%, 0.00%), |/job:localhost/replica:0/task:0/device:gpu:0, /job:localhost/replica:0/task:0/device:gpu:0|Const,     1|1107
+VariableV2                          256B (1.12%, 1.12%),            256B (1.12%, 1.12%),          256B (28.32%, 28.32%),            17us (3.48%, 3.48%),             0us (0.00%, 0.00%),            17us (3.62%, 3.62%), 9.67m params (100.00%, 100.00%),     0 float_ops (0.00%, 0.00%), |/job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|VariableV2|_trainable_variables,      1|304

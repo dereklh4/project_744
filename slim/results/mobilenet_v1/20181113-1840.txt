@@ -1,0 +1,26 @@
+{'adagrad_initial_accumulator_value': 0.1, 'learning_rate_decay_factor': 0.94, 'help': False, 'dataset_split_name': 'train', 'clone_on_cpu': True, 'dataset_dir': './data/cifar10', 'ftrl_initial_accumulator_value': 0.1, 'ftrl_learning_rate_power': -0.5, 'number_of_steps': 1, 'num_clones': 1, 'labels_offset': 0, 'worker_replicas': 1, 'rmsprop_decay': 0.9, 'log_every_n_steps': 10, 'weight_decay': 4e-05, 'end_learning_rate': 0.0001, 'trainable_scopes': None, 'checkpoint_path': None, 'save_summaries_secs': 600, 'rmsprop_momentum': 0.9, 'master': '', 'num_readers': 4, 'replicas_to_aggregate': 1, 'learning_rate': 0.01, 'momentum': 0.9, 'opt_epsilon': 1.0, 'num_preprocessing_threads': 4, 'helpfull': False, 'learning_rate_decay_type': 'exponential', 'optimizer': 'rmsprop', 'preprocessing_name': None, 'num_epochs_per_decay': 2.0, 'helpshort': False, 'label_smoothing': 0.0, 'adam_beta1': 0.9, 'adam_beta2': 0.999, 'batch_size': 4, 'save_interval_secs': 600, 'ftrl_l1': 0.0, 'ftrl_l2': 0.0, 'task': 0, 'num_ps_tasks': 0, 'train_image_size': None, 'h': False, 'train_dir': '/tmp/train_logs', 'moving_average_decay': None, 'sync_replicas': False, 'model_name': 'mobilenet_v1', 'quantize_delay': -1, 'adadelta_rho': 0.95, 'checkpoint_exclude_scopes': None, 'ignore_missing_vars': False, 'max_number_of_steps': None, 'dataset_name': 'cifar10'}
+
+Doc:
+op: The nodes are operation kernel type, such as MatMul, Conv2D. Graph nodes belonging to the same type are aggregated together.
+accelerator execution time: Time spent executing on the accelerator. This is normally measured by the actual hardware library.
+cpu execution time: The time from the start to the end of the operation. It's the sum of actual cpu run time plus the time that it spends waiting if part of computation is launched asynchronously.
+device: which device is placed on.
+flops: Number of float operations. Note: Please read the implementation for the math behind it.
+total execution time: Sum of accelerator execution time and cpu execution time.
+cpu execution time: The time from the start to the end of the operation. It's the sum of actual cpu run time plus the time that it spends waiting if part of computation is launched asynchronously.
+accelerator execution time: Time spent executing on the accelerator. This is normally measured by the actual hardware library.
+occurrence: The number of times it occurs
+op_types: The attributes of the operation, includes the Kernel name device placed on and user-defined strings.
+output bytes: The memory that is output from the operation (not necessarilty allocated by the operation)
+param: Number of parameters (in the Variable).
+peak bytes: The peak amount of memory that the operation is holding at some point.
+residual bytes: The memory not de-allocated after the operation finishes.
+tensor_value: Not supported now.
+
+Profile:
+node name | peak bytes | residual bytes | output bytes | total execution time | accelerator execution time | cpu execution time | # parameters | # float_ops | assigned devices | op types | op occurrence (run|defined)
+GreaterEqual                      256B (100.00%, 0.01%),          256B (100.00%, 0.01%),         256B (100.00%, 28.32%),        184us (100.00%, 54.76%),        18us (100.00%, 100.00%),        166us (100.00%, 52.20%),      0 params (100.00%, 0.00%), 1 float_ops (100.00%, 100.00%), /job:localhost/replica:0/task:0/device:gpu:0, /job:localhost/replica:0/task:0/device:gpu:0|GreaterEqual,        1|1
+QueueCloseV2                          0B (0.00%, 0.00%),              0B (0.00%, 0.00%),              0B (0.00%, 0.00%),          76us (45.24%, 22.62%),             0us (0.00%, 0.00%),          76us (47.80%, 23.90%),      0 params (100.00%, 0.00%),     0 float_ops (0.00%, 0.00%), |/job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|QueueCloseV2,        1|8
+FIFOQueueV2                     4.82MB (99.99%, 99.98%),        4.82MB (99.99%, 99.98%),          136B (71.68%, 15.04%),          35us (22.62%, 10.42%),             0us (0.00%, 0.00%),          35us (23.90%, 11.01%),      0 params (100.00%, 0.00%),     0 float_ops (0.00%, 0.00%), |/job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|FIFOQueueV2,        1|3
+Const                               256B (0.01%, 0.01%),            256B (0.01%, 0.01%),          256B (56.64%, 28.32%),           24us (12.20%, 7.14%),             0us (0.00%, 0.00%),           24us (12.89%, 7.55%),      0 params (100.00%, 0.00%),     0 float_ops (0.00%, 0.00%), |/job:localhost/replica:0/task:0/device:gpu:0, /job:localhost/replica:0/task:0/device:gpu:0|Const,     1|1107
+VariableV2                          256B (0.01%, 0.01%),            256B (0.01%, 0.01%),          256B (28.32%, 28.32%),            17us (5.06%, 5.06%),             0us (0.00%, 0.00%),            17us (5.35%, 5.35%), 9.67m params (100.00%, 100.00%),     0 float_ops (0.00%, 0.00%), |/job:localhost/replica:0/task:0/device:cpu:0, /job:localhost/replica:0/task:0/device:cpu:0|VariableV2|_trainable_variables,      1|304
