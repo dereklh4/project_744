@@ -13,9 +13,12 @@ if __name__ == '__main__':
     ylab = sys.argv[3]
     topk = int(sys.argv[4])
     output_file = sys.argv[5]
+
+
+
     df, meta = rp(f, 'KB', 'ms', 'm')
     srted = df.sort_values(col)[-topk:]
-    subplt = srted.plot('node name', col, kind='bar', figsize=(8, 8))
+    subplt = srted.plot('node name', col, kind='bar', figsize=(8, 8), title=col)
     subplt.axes.set_ylabel(ylab)
     subplt.axes.get_legend().remove()
     subplt.figure.tight_layout()
