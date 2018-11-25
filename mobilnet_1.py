@@ -13,7 +13,7 @@ import torchvision.datasets as datasets
 import torchvision.models as models
 
 
-device = "cpu"
+device = "cuda"
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -142,10 +142,10 @@ def validate(test_loader, model, criterion):
 
 
 def main():
-    model = Net()
+    model = models.resnet18()
     model.to(device)
     criterion = nn.CrossEntropyLoss().to(device)
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     if device == "cuda":
         cudnn.benchmark = True
 
