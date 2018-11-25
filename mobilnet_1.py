@@ -98,8 +98,11 @@ def train(train_loader, model, criterion, optimizer, epoch):
         optimizer.zero_grad()
         output = model(input_batch)
         loss = criterion(output, target)
-        loss.backward()
-        optimizer.step()
+        with torch.autograd.profiler.profile(use_cuda=True) as prof:
+            loss.backward()
+            optimizer.step()
+
+        print (prof)
         
         toc = time.time()
         step_time_current = toc - step_start_time
