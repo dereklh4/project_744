@@ -145,7 +145,19 @@ def main():
     model = models.resnet18()
     model.to(device)
     criterion = nn.CrossEntropyLoss().to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    
+    model.fc.requires_grad = False
+    model.fc.requires_grad = False
+
+    for param in model.layer4.parameters():
+        param.requires_grad = False
+
+    for param in model.parameters():
+        print (param.requires_grad)
+
+    optimizer = torch.optim.Adam(filter( lambda p: p.requires_grad,
+                                        model.parameters()) , lr=0.01)
+    
     if device == "cuda":
         cudnn.benchmark = True
 
