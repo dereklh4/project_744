@@ -146,11 +146,14 @@ def main():
     model.to(device)
     criterion = nn.CrossEntropyLoss().to(device)
     
-    model.fc.weight.requires_grad = False
-    model.fc.bias.requires_grad = False
+    for param in model.parameters():
+        param.requires_grad = False
+
+    model.fc.weight.requires_grad = True
+    model.fc.bias.requires_grad = True
 
     for param in model.layer4.parameters():
-        param.requires_grad = False
+        param.requires_grad = True
 
     for param in model.parameters():
         print (param.requires_grad)
