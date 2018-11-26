@@ -16,8 +16,8 @@ import torchvision.models as models
 
 device = "cpu"
 print ("Process ID {}".format(os.getpid()))
-out_forward_file = "mobilnet_cpu_trace_forward"
-out_backward_file = "mobilnet_cpu_tace_backward"
+out_forward_file = "mobilnet_cpu_trace_forward_batch_32"
+out_backward_file = "mobilnet_cpu_trace_backward_batch_32"
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
@@ -200,7 +200,7 @@ def main():
         datasets.CIFAR10(
             './data', train=True, transform=data_transforms,
                          download=True), 
-        batch_size=16, shuffle=True, num_workers=1, pin_memory=True)
+        batch_size=32, shuffle=True, num_workers=0, pin_memory=False)
 
     test_loader = torch.utils.data.DataLoader(
         datasets.CIFAR10('./data', train=False, transform=data_transforms),
