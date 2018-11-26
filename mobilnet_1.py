@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import time
 
@@ -13,8 +14,10 @@ import torchvision.datasets as datasets
 import torchvision.models as models
 
 
-device = "cuda"
-
+device = "cpu"
+print ("Process ID {}".format(os.getpid()))
+out_forward_file = "mobilnet_cpu_trace_forward"
+out_backward_file = "mobilnet_cpu_tace_backward"
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
@@ -87,6 +90,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
     step_start_time = time.time()
     data_time_list = list()
     step_time_list = list()
+    count = 0
     for i, (input_batch, target) in enumerate(train_loader):
         toc = time.time()
         # time taken to get data out
@@ -96,13 +100,27 @@ def train(train_loader, model, criterion, optimizer, epoch):
         
         input_batch, target = input_batch.to(device), target.to(device)
         optimizer.zero_grad()
-        output = model(input_batch)
+        with torch.autograd.profiler.profile(use_cuda=False) as f_prof:
+            # with torch.autograd.profiler.emit_nvtx():      
+            output = model(input_batch)
+        f_prof.export_chrome_trace('./{}_{}.trace'.format(out_forward_file, count))
+        out_table = f_prof.table()
+        with open("{}_{}.txt".format(out_forward_file, count), 'w') as fout:
+            fout.write(out_table)
+            
         loss = criterion(output, target)
-        with torch.autograd.profiler.profile(use_cuda=True) as prof:
-            loss.backward()
-            optimizer.step()
 
-        print (prof)
+        with torch.autograd.profiler.profile(use_cuda=False) as prof:
+            # with torch.autograd.profiler.emit_nvtx():
+            loss.backward()
+
+        optimizer.step()
+
+        # print (prof)
+        prof.export_chrome_trace('./{}_{}.trace'.format(out_backward_file,count))
+        out_table = f_prof.table()
+        with open("{}_{}.txt".format(out_backward_file,count), 'w') as fout:
+            fout.write(out_table)
         
         toc = time.time()
         step_time_current = toc - step_start_time
@@ -111,6 +129,9 @@ def train(train_loader, model, criterion, optimizer, epoch):
 
         # at the end of current iteration, to calculate the next batch 
         # accurately
+        count += 1
+        if count == 3:
+           sys.exit(0)
 
         data_start_time = time.time()
         step_start_time = time.time()
@@ -145,21 +166,21 @@ def validate(test_loader, model, criterion):
 
 
 def main():
-    model = models.resnet18()
+    model = Net()
     model.to(device)
     criterion = nn.CrossEntropyLoss().to(device)
     
-    for param in model.parameters():
-        param.requires_grad = False
+    # for param in model.parameters():
+        # param.requires_grad = False
 
-    model.fc.weight.requires_grad = True
-    model.fc.bias.requires_grad = True
+    # model.fc.weight.requires_grad = True
+    # model.fc.bias.requires_grad = True
 
-    for param in model.layer4.parameters():
-        param.requires_grad = True
+    # for param in model.layer4.parameters():
+        # param.requires_grad = True
 
-    for param in model.parameters():
-        print (param.requires_grad)
+    # for param in model.parameters():
+        # print (param.requires_grad)
 
     optimizer = torch.optim.Adam(filter( lambda p: p.requires_grad,
                                         model.parameters()) , lr=0.01)
