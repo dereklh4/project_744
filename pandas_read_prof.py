@@ -128,11 +128,21 @@ def read_prof(fname, mem_unit, t_unit, flops_unit):
     df = pd.DataFrame(data_dict)
     return (df, meta)
 
-def read_torch_prof(fname):
+def read_torch_prof(fname, raw=False):
+    SCALE = 1000
     lines = open(fname).readlines()[3:]
     #get the first 3 items in each row
     sre = re.compile('\\s\\s+')
     tuples = [tuple([s.strip() for s in sre.split(l)[:3]]) for l in lines]
+
+    #return a raw dataframe
+    if raw:
+        data = {
+            'op_name' : [t[0] for t in tuples],
+            'cpu_time' : [float(t[1][:-2]) / SCALE for t in tuples],
+            'gpu_time' : [float(t[2][:-2]) / SCALE for t in tuples]
+        }
+        return pd.DataFrame(data)
         
 
     raw_data = {}
@@ -144,9 +154,10 @@ def read_torch_prof(fname):
         }
 
     for t in tuples:
-        #convert to seconds
-        raw_data[t[0]]['cpu_time'].append(float( t[1][:-2] ) / 1000)
-        raw_data[t[0]]['gpu_time'].append(float( t[2][:-2] ) / 1000)
+        #convert to miliseconds
+        raw_data[t[0]]['cpu_time'].append(float( t[1][:-2] ) / SCALE)
+        raw_data[t[0]]['gpu_time'].append(float( t[2][:-2] ) / SCALE)
+    
 
     data = {
         'op_name' : [],
