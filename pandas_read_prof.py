@@ -1,5 +1,6 @@
 from __future__ import division
 import pandas as pd
+import numpy as np
 import re
 
 #################################################################
@@ -39,7 +40,7 @@ cell_split = re.compile('')
 val_unit_re = re.compile('(\d*\.?\d+)([a-zA-Z]+)')
 
 def val_unit(cell):
-    print(cell)
+    #print(cell)
     cell  = cell.strip()
     m = val_unit_re.search(cell)
     if m != None:
@@ -126,5 +127,71 @@ def read_prof(fname, mem_unit, t_unit, flops_unit):
 
     df = pd.DataFrame(data_dict)
     return (df, meta)
+
+def read_torch_prof(fname, raw=False):
+    SCALE = 1000
+    lines = open(fname).readlines()[3:]
+    #get the first 3 items in each row
+    sre = re.compile('\\s\\s+')
+    tuples = [tuple([s.strip() for s in sre.split(l)[:3]]) for l in lines]
+
+    #return a raw dataframe
+    if raw:
+        data = {
+            'op_name' : [t[0] for t in tuples],
+            'cpu_time' : [float(t[1][:-2]) / SCALE for t in tuples],
+            'gpu_time' : [float(t[2][:-2]) / SCALE for t in tuples]
+        }
+        return pd.DataFrame(data)
+        
+
+    raw_data = {}
+    op_names = {t[0] for t in tuples}
+    for op in op_names:
+        raw_data[op] = {
+            'cpu_time' : [],
+            'gpu_time' :[],
+        }
+
+    for t in tuples:
+        #convert to miliseconds
+        raw_data[t[0]]['cpu_time'].append(float( t[1][:-2] ) / SCALE)
+        raw_data[t[0]]['gpu_time'].append(float( t[2][:-2] ) / SCALE)
+    
+
+    data = {
+        'op_name' : [],
+        'cpu_std_dev' : [],
+        'cpu_avg' : [],
+        'cpu_total' : [],
+        'gpu_std_dev' : [],
+        'gpu_avg' : [],
+        'gpu_total' : [],
+        'ncalls' : [],
+        'total_time' : []
+    }
+
+    for op in op_names:
+        row = raw_data[op]
+        row['cpu_time'] = np.array(row['cpu_time'])
+        row['gpu_time'] = np.array(row['gpu_time'])
+
+        data['op_name'].append(op)
+
+        data['cpu_std_dev'].append(row['cpu_time'].std())
+        data['cpu_avg'].append(row['cpu_time'].mean())
+        data['cpu_total'].append(row['cpu_time'].sum())
+
+        data['gpu_std_dev'].append(row['gpu_time'].std())
+        data['gpu_avg'].append(row['gpu_time'].mean())
+        data['gpu_total'].append(row['gpu_time'].sum())
+
+        data['ncalls'].append(len(row['gpu_time']))
+        data['total_time'].append(row['gpu_time'].sum() + row['cpu_time'].sum() )
+
+
+    return pd.DataFrame(data)
+
+        
 
 
