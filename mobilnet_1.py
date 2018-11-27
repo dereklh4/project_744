@@ -16,8 +16,8 @@ import torchvision.models as models
 
 device = "cpu"
 print ("Process ID {}".format(os.getpid()))
-out_forward_file = "mobilnet_cpu_trace_forward_batch_32"
-out_backward_file = "mobilnet_cpu_trace_backward_batch_32"
+out_forward_file = "mobilnet_cpu_32_forward"
+out_backward_file = "mobilnet_cpu_32_backward"
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
