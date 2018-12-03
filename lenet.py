@@ -16,9 +16,17 @@ out_file_loss = 'loss_per_epoch.txt'
 
 metrics_dict = defaultdict(list)
 compression_dict = defaultdict(list)
-# class Net(nn.Module):
+percentage_of_layers = 1.0
+def generate_mask_array(array_len):
+    num_ones = int(array_len * percentage_of_layers)
+    num_zeros = array_len - num_ones
+    arr = np.array([1] * num_ones + [0] * num_zeros)
+    np.random.shuffle(arr)
+    return arr
+
+# class Net_1(nn.Module):
     # def __init__(self):
-        # super(Net, self).__init__()
+        # super(Net_1, self).__init__()
         # self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
         # self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
         # self.conv2_drop = nn.Dropout2d()
@@ -39,10 +47,18 @@ class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         # self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
-        self.conv1_list = [nn.Conv2d(1,1,kernel_size=5) for i in range(10)]
+        # self.conv1_list = nn.ModuleList([nn.Conv2d(1,5,kernel_size=5) for i in
+                                         # range(2)])
+
+        self.conv1_list = nn.ModuleList([nn.Conv2d(1,1,kernel_size=5) for i in
+                                         range(10)])
         # self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
-        self.conv2_list = [nn.Conv2d(10, 1, kernel_size=5) for i in range(20)]
-        self.conv2_drop = nn.Dropout2d()
+        # self.conv2_list = nn.ModuleList([nn.Conv2d(10, 5, kernel_size=5) for i
+                                         # in range(4)])
+        
+        self.conv2_list = nn.ModuleList([nn.Conv2d(10, 1, kernel_size=5) for i
+                                         in range(20)])
+        # self.conv2_drop = nn.Dropout2d()
         self.fc1 = nn.Linear(320, 50)
         self.fc2 = nn.Linear(50, 10)
 
@@ -54,7 +70,7 @@ class Net(nn.Module):
         # x = F.relu(F.max_pool2d(self.conv1(x), 2))
         x = [b(x) for b in self.conv2_list]
         x = torch.cat(x, dim=1)
-        x = self.conv2_drop(x)
+        # x = self.conv2_drop(x)
         x = F.relu(F.max_pool2d(x,2))
         # x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
         x = x.view(-1, 320)
@@ -95,13 +111,30 @@ def train(model, device, train_loader, optimizer, epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
+        array_mask = generate_mask_array(len(model.conv1_list))
+        for idx,p in enumerate(model.conv1_list):
+            if array_mask[idx] == 0:
+                p.weight.requires_grad = False
+                p.bias.requires_grad = False
+
+        array_mask = generate_mask_array(len(model.conv2_list))
+        for idx, p in enumerate(model.conv2_list):
+            if array_mask[idx] == 0:
+                p.weight.requires_grad = False
+                p.bias.requires_grad = False
+
+        #for param in model.parameters():
+            #print (param.requires_grad)
+
+        
+        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad,
+                                            model.parameters()), lr=0.01) 
         optimizer.zero_grad()
         output = model(data)
         loss = F.nll_loss(output, target)
         loss.backward()
-       
-        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad,
-                                            model.parameters()) , lr=0.01) 
+        temp_array = np.random.randint(0, high=2, size=10)
+        
         # import ipdb; ipdb.set_trace()
         layer_count = 0
         # for param in model.parameters():
@@ -157,25 +190,29 @@ def main():
                                                           ])),
                 batch_size=64, shuffle=True)
 
-    model = Net().to(device)
-    import ipdb; ipdb.set_trace()
+    model = Net()
+    model = model.to(device)
+    # import ipdb; ipdb.set_trace()
 
     # optimizer = optim.SGD(model.parameters(), lr=0.01,
                           # momentum=0.9)
     optimizer = None
-    for epoch in range(5):
+    for epoch in range(20):
         tic = time.time()
         train(model, device, train_loader, optimizer, epoch)
         toc = time.time()
         print ("Time taken for an epoch = {}".format(toc-tic))
+        metrics_dict["Time per epoch"].append(toc-tic)
         test(model, device, test_loader)
         # import ipdb; ipdb.set_trace()
-
-    with open("./1_bit_stats.json", 'w') as f:
+    # two parts is for running when we are running 2 filters of 5 in first
+    # layer and 4 filters of 5 in second layers
+    # all parts is all filters separate
+    with open("./100pc_all_parts_stats.json", 'w') as f:
         json.dump(metrics_dict, f, indent=4)
 
-    with open("./1_bit_compression.json", 'w') as f:
-        json.dump(compression_dict,  f, indent=4)
+    # with open("./1_bit_compression.json", 'w') as f:
+        # json.dump(compression_dict,  f, indent=4)
 
     
 
