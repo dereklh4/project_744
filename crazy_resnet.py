@@ -14,7 +14,7 @@ import time
 from collections import defaultdict
 metrics_dict = defaultdict(list)
 compression_dict = defaultdict(list)
-percentage_of_layers = 1.0
+percentage_of_layers = 0.8
 
 def generate_mask_array(array_len):
     num_ones = int(array_len * percentage_of_layers)
@@ -119,6 +119,7 @@ class ResNet(nn.Module):
 def train(model, device, train_loader, optimizer, epoch):
     global metrics_dict
     model.train()
+    step_count = 0
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         # array_mask = generate_mask_array(len(model.conv1_list))
@@ -133,51 +134,51 @@ def train(model, device, train_loader, optimizer, epoch):
                 # p.weight.requires_grad = False
                 # p.bias.requires_grad = False
 
+        step_count += 1
+        if step_count%20==0 or step_count==1:
+            print ("Changing the parameter step_count = {}".format(step_count))
+            for child in model.layer1.children():
+                array_mask = generate_mask_array(len(child.conv1))
+                for idx, p in enumerate(child.conv1):
+                    if array_mask[idx] == 0:
+                        p.weight.requires_grad = False
+                array_mask = generate_mask_array(len(child.conv2))
+                for idx, p in enumerate(child.conv2):
+                    if array_mask[idx] == 0:
+                        p.weight.requires_grad = False
+                    
+            for child in model.layer2.children():
+                array_mask = generate_mask_array(len(child.conv1))
+                for idx, p in enumerate(child.conv1):
+                    if array_mask[idx] == 0:
+                        p.weight.requires_grad = False
+                array_mask = generate_mask_array(len(child.conv2))
+                for idx, p in enumerate(child.conv2):
+                    if array_mask[idx] == 0:
+                        p.weight.requires_grad = False
 
-        for child in model.layer1.children():
-            array_mask = generate_mask_array(len(child.conv1))
-            for idx, p in enumerate(child.conv1):
-                if array_mask[idx] == 0:
-                    p.weight.requires_grad = False
-            array_mask = generate_mask_array(len(child.conv2))
-            for idx, p in enumerate(child.conv2):
-                if array_mask[idx] == 0:
-                    p.weight.requires_grad = False
+            
+            for child in model.layer3.children():
+                array_mask = generate_mask_array(len(child.conv1))
+                for idx, p in enumerate(child.conv1):
+                    if array_mask[idx] == 0:
+                        p.weight.requires_grad = False
+                array_mask = generate_mask_array(len(child.conv2))
+                for idx, p in enumerate(child.conv2):
+                    if array_mask[idx] == 0:
+                        p.weight.requires_grad = False
 
-
-                
-        for child in model.layer2.children():
-            array_mask = generate_mask_array(len(child.conv1))
-            for idx, p in enumerate(child.conv1):
-                if array_mask[idx] == 0:
-                    p.weight.requires_grad = False
-            array_mask = generate_mask_array(len(child.conv2))
-            for idx, p in enumerate(child.conv2):
-                if array_mask[idx] == 0:
-                    p.weight.requires_grad = False
-
-        
-        for child in model.layer3.children():
-            array_mask = generate_mask_array(len(child.conv1))
-            for idx, p in enumerate(child.conv1):
-                if array_mask[idx] == 0:
-                    p.weight.requires_grad = False
-            array_mask = generate_mask_array(len(child.conv2))
-            for idx, p in enumerate(child.conv2):
-                if array_mask[idx] == 0:
-                    p.weight.requires_grad = False
-
-        
-        for child in model.layer4.children():
-            array_mask = generate_mask_array(len(child.conv1))
-            for idx, p in enumerate(child.conv1):
-                if array_mask[idx] == 0:
-                    p.weight.requires_grad = False
-            array_mask = generate_mask_array(len(child.conv2))
-            for idx, p in enumerate(child.conv2):
-                if array_mask[idx] == 0:
-                    p.weight.requires_grad = False
-        
+            
+            for child in model.layer4.children():
+                array_mask = generate_mask_array(len(child.conv1))
+                for idx, p in enumerate(child.conv1):
+                    if array_mask[idx] == 0:
+                        p.weight.requires_grad = False
+                array_mask = generate_mask_array(len(child.conv2))
+                for idx, p in enumerate(child.conv2):
+                    if array_mask[idx] == 0:
+                        p.weight.requires_grad = False
+            
         # for param in model.parameters():
             # print (param.requires_grad)
         # import ipdb; ipdb.set_trace()
