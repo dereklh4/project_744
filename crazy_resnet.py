@@ -199,7 +199,7 @@ def main():
     testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
 
-    model = ResNet()
+    model = ResNet(BasicBlock, [2,2,2,2])
     model = model.to(device)
     optimizer = None
     for epoch in range(30):
