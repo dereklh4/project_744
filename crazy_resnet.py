@@ -136,11 +136,11 @@ def train(model, device, train_loader, optimizer, epoch):
 
         for child in model.layer1.children():
             array_mask = generate_mask_array(len(child.conv1))
-            for idx, p in enumerate(model.conv1):
+            for idx, p in enumerate(child.conv1):
                 if array_mask[idx] == 0:
                     p.weight.requires_grad = False
             array_mask = generate_mask_array(len(child.conv2))
-            for idx, p in enumerate(model.conv2):
+            for idx, p in enumerate(child.conv2):
                 if array_mask[idx] == 0:
                     p.weight.requires_grad = False
 
@@ -148,33 +148,33 @@ def train(model, device, train_loader, optimizer, epoch):
                 
         for child in model.layer2.children():
             array_mask = generate_mask_array(len(child.conv1))
-            for idx, p in enumerate(model.conv1):
+            for idx, p in enumerate(child.conv1):
                 if array_mask[idx] == 0:
                     p.weight.requires_grad = False
             array_mask = generate_mask_array(len(child.conv2))
-            for idx, p in enumerate(model.conv2):
+            for idx, p in enumerate(child.conv2):
                 if array_mask[idx] == 0:
                     p.weight.requires_grad = False
 
         
         for child in model.layer3.children():
             array_mask = generate_mask_array(len(child.conv1))
-            for idx, p in enumerate(model.conv1):
+            for idx, p in enumerate(child.conv1):
                 if array_mask[idx] == 0:
                     p.weight.requires_grad = False
             array_mask = generate_mask_array(len(child.conv2))
-            for idx, p in enumerate(model.conv2):
+            for idx, p in enumerate(child.conv2):
                 if array_mask[idx] == 0:
                     p.weight.requires_grad = False
 
         
         for child in model.layer4.children():
             array_mask = generate_mask_array(len(child.conv1))
-            for idx, p in enumerate(model.conv1):
+            for idx, p in enumerate(child.conv1):
                 if array_mask[idx] == 0:
                     p.weight.requires_grad = False
             array_mask = generate_mask_array(len(child.conv2))
-            for idx, p in enumerate(model.conv2):
+            for idx, p in enumerate(child.conv2):
                 if array_mask[idx] == 0:
                     p.weight.requires_grad = False
         
