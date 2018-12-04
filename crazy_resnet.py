@@ -178,9 +178,9 @@ def train(model, device, train_loader, optimizer, epoch):
                 if array_mask[idx] == 0:
                     p.weight.requires_grad = False
         
-        for param in model.parameters():
-            print (param.requires_grad)
-        import ipdb; ipdb.set_trace()
+        # for param in model.parameters():
+            # print (param.requires_grad)
+        # import ipdb; ipdb.set_trace()
         optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad,
                                             model.parameters()), lr=0.01) 
         optimizer.zero_grad()
@@ -255,7 +255,7 @@ def main():
         test(model, device, test_loader)
 
         
-    with open("./100pc_all_parts_stats.json", 'w') as f:
+    with open("./100pc_all_resnets_stats.json", 'w') as f:
         json.dump(metrics_dict, f, indent=4)
 
 if __name__ == '__main__':
