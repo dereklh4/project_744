@@ -48,7 +48,7 @@ class BasicBlock(nn.Module):
         out = [b(x) for b in self.conv1]
         out = torch.cat(out, dim=1)
         out = F.relu(self.bn1(out))
-        out = [b(x) for b in self.conv2]
+        out = [b(out) for b in self.conv2]
         out = torch.cat(out, dim=1)
         out = self.bn2(out)
         out += self.shortcut(x)
