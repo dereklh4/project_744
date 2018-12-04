@@ -121,7 +121,7 @@ def train(model, device, train_loader, optimizer, epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
-        array_mask = generate_mask_array(len(model.conv1_list))
+        # array_mask = generate_mask_array(len(model.conv1_list))
         # for idx,p in enumerate(model.conv1_list):
             # if array_mask[idx] == 0:
                 # p.weight.requires_grad = False
