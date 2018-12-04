@@ -29,7 +29,7 @@ class BasicBlock(nn.Module):
 
     def __init__(self, in_planes, planes, stride=1):
         super(BasicBlock, self).__init__()
-        num_filter = planes/16
+        num_filter = int(planes/16)
         self.conv1 = nn.ModuleList([
             nn.Conv2d(in_planes, 16, kernel_size=3, stride=stride, padding=1, bias=False) for i in range(num_filter)])
         self.bn1 = nn.BatchNorm2d(planes)
