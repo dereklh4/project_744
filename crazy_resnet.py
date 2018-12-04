@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+import time
+from collections import defaultdict
 metrics_dict = defaultdict(list)
 compression_dict = defaultdict(list)
 percentage_of_layers = 1.0
