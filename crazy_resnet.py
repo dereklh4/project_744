@@ -133,10 +133,54 @@ def train(model, device, train_loader, optimizer, epoch):
                 # p.weight.requires_grad = False
                 # p.bias.requires_grad = False
 
-        #for param in model.parameters():
-            #print (param.requires_grad)
+
+        for child in model.layer1.children():
+            array_mask = generate_mask_array(len(child.conv1))
+            for idx, p in enumerate(model.conv1):
+                if array_mask[idx] == 0:
+                    p.weight.requires_grad = False
+            array_mask = generate_mask_array(len(child.conv2))
+            for idx, p in enumerate(model.conv2):
+                if array_mask[idx] == 0:
+                    p.weight.requires_grad = False
+
+
+                
+        for child in model.layer2.children():
+            array_mask = generate_mask_array(len(child.conv1))
+            for idx, p in enumerate(model.conv1):
+                if array_mask[idx] == 0:
+                    p.weight.requires_grad = False
+            array_mask = generate_mask_array(len(child.conv2))
+            for idx, p in enumerate(model.conv2):
+                if array_mask[idx] == 0:
+                    p.weight.requires_grad = False
 
         
+        for child in model.layer3.children():
+            array_mask = generate_mask_array(len(child.conv1))
+            for idx, p in enumerate(model.conv1):
+                if array_mask[idx] == 0:
+                    p.weight.requires_grad = False
+            array_mask = generate_mask_array(len(child.conv2))
+            for idx, p in enumerate(model.conv2):
+                if array_mask[idx] == 0:
+                    p.weight.requires_grad = False
+
+        
+        for child in model.layer4.children():
+            array_mask = generate_mask_array(len(child.conv1))
+            for idx, p in enumerate(model.conv1):
+                if array_mask[idx] == 0:
+                    p.weight.requires_grad = False
+            array_mask = generate_mask_array(len(child.conv2))
+            for idx, p in enumerate(model.conv2):
+                if array_mask[idx] == 0:
+                    p.weight.requires_grad = False
+        
+        for param in model.parameters():
+            print (param.requires_grad)
+        import ipdb; ipdb.set_trace()
         optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad,
                                             model.parameters()), lr=0.01) 
         optimizer.zero_grad()
