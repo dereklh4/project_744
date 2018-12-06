@@ -1,10 +1,10 @@
 
 #start,stop,step
-batch_range = (1,512,10)
-input_channels_range = (1,100,10)
-image_size_range = (1,100,10)
-output_channels_range = (1,100,10)
-kernel_size_range = (1,100,10)
+batch_range = (1,256,16)
+input_channels_range = (1,512,16)
+image_size_range = (28,256,16)
+output_channels_range = (1,512,16)
+kernel_size_range = (1,7,2)
 
 
 output_file = open("experiments.txt","w+")

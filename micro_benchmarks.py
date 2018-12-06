@@ -8,7 +8,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from collections import defaultdict
 import time
-import numcompress as nc
+#import numcompress as nc
 
 out_file_compression = 'compression_ratio.txt'
 out_file_accuracy = 'accuracy.txt'
@@ -140,7 +140,6 @@ def main():
             toc_back = time.time()
             print ("Time taken for a backward = {}".format(toc_back-tic_back))
             print ("Time taken for a forward = {}".format(toc - tic))
-
 
 if __name__ == '__main__':
     main()
