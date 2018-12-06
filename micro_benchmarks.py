@@ -24,6 +24,18 @@ def generate_mask_array(array_len):
     np.random.shuffle(arr)
     return arr
 
+def calculate_max_memory_cc(pid):
+    redis_conn = redis.Redis(host='0.0.0.0', port=redis_port)
+    max_memory = 0
+    while True:
+        time.sleep(0.01)
+        process = psutil.Process(pid)
+        mem = process.memory_info().rss
+        mem_in_mb = mem / float(2 ** 20)
+        if mem_in_mb > max_memory:
+            redis_conn.set("max_mem_cc", mem_in_mb)
+            max_memory = mem_in_mb
+
 class Net(nn.Module):
     def __init__(self, input_num_channel, output_num_channel, kernel_size_num):
         super(Net, self).__init__()
@@ -92,43 +104,42 @@ class Net(nn.Module):
                 # 100. * batch_idx / len(train_loader), loss.item()))
 
 def main():
-    input_batch_size = 64
-    input_num_channel = 1
-    image_size = 28
-    device = "cpu" # for gpu it is cuda
-    tensor_to_test = torch.randn(input_batch_size, input_num_channel,
-                                 image_size, image_size)
-    # metrics_dict = dict()
-    # train_loader = torch.utils.data.DataLoader(
-        # datasets.MNIST('./data', train=True, download=True,
-                       # transform=transforms.Compose([
-                           # transforms.ToTensor(),
-                           # transforms.Normalize((0.1307,), (0.3081,))
-                       # ])),
-        # batch_size=64, shuffle=True)
+    f = open("experiments.txt","r")
 
-    # test_loader = torch.utils.data.DataLoader(
-                # datasets.MNIST('./data', train=False,
-                               # transform=transforms.Compose([
-                                                              # transforms.ToTensor(),
-                                                              # transforms.Normalize((0.1307,),
-                                                                                   # (0.3081,))
-                                                          # ])),
-                # batch_size=64, shuffle=True)
-    output_num_channel = 32
-    kernel_size_num = 5
-    model = Net(input_num_channel, output_num_channel, kernel_size_num)
-    model = model.to(device)
-    for epoch in range(4):
-        tic = time.time()
-        forward_pass = model(tensor_to_test)
-        toc = time.time()
+    for line in f.readlines():
+        input_batch_size, input_num_channel, image_size, output_num_channel, kernel_size_num  = map(int,line.split(","))
+        device = "cpu" # for gpu it is cuda
+        tensor_to_test = torch.randn(input_batch_size, input_num_channel,
+                                     image_size, image_size)
+        # metrics_dict = dict()
+        # train_loader = torch.utils.data.DataLoader(
+            # datasets.MNIST('./data', train=True, download=True,
+                           # transform=transforms.Compose([
+                               # transforms.ToTensor(),
+                               # transforms.Normalize((0.1307,), (0.3081,))
+                           # ])),
+            # batch_size=64, shuffle=True)
 
-        tic_back = time.time()
-        forward_pass.backward()
-        toc_back = time.time()
-        print ("Time taken for a backward = {}".format(toc_back-tic_back))
-        print ("Time taken for a forward = {}".format(toc - tic))
+        # test_loader = torch.utils.data.DataLoader(
+                    # datasets.MNIST('./data', train=False,
+                                   # transform=transforms.Compose([
+                                                                  # transforms.ToTensor(),
+                                                                  # transforms.Normalize((0.1307,),
+                                                                                       # (0.3081,))
+                                                              # ])),
+                    # batch_size=64, shuffle=True)
+        model = Net(input_num_channel, output_num_channel, kernel_size_num)
+        model = model.to(device)
+        for epoch in range(4):
+            tic = time.time()
+            forward_pass = model(tensor_to_test)
+            toc = time.time()
+
+            tic_back = time.time()
+            forward_pass.backward()
+            toc_back = time.time()
+            print ("Time taken for a backward = {}".format(toc_back-tic_back))
+            print ("Time taken for a forward = {}".format(toc - tic))
 
 
 if __name__ == '__main__':
