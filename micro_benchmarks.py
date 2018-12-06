@@ -42,7 +42,7 @@ class Net(nn.Module):
         # x = F.dropout(x, training=self.training)
         # x = self.fc2(x)
         x = self.conv1(x)
-        return (x)
+        return (x.sum())
 
 
     # import ipdb; ipdb.set_trace()
@@ -119,10 +119,6 @@ def main():
     kernel_size_num = 5
     model = Net(input_num_channel, output_num_channel, kernel_size_num)
     model = model.to(device)
-    # import ipdb; ipdb.set_trace()
-
-    # optimizer = optim.SGD(model.parameters(), lr=0.01,
-                          # momentum=0.9)
     for epoch in range(4):
         tic = time.time()
         forward_pass = model(tensor_to_test)
@@ -134,15 +130,6 @@ def main():
         print ("Time taken for a backward = {}".format(toc_back-tic_back))
         print ("Time taken for a forward = {}".format(toc - tic))
 
-        # import ipdb; ipdb.set_trace()
-    # two parts is for running when we are running 2 filters of 5 in first
-    # layer and 4 filters of 5 in second layers
-    # all parts is all filters separate
-
-    # with open("./1_bit_compression.json", 'w') as f:
-        # json.dump(compression_dict,  f, indent=4)
-
-    
 
 if __name__ == '__main__':
     main()
