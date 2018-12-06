@@ -130,31 +130,31 @@ class Net(nn.Module):
 
 def main():
     f = open("experiments.txt","r")
+    output = open("results_microbenchmarks.txt","w+")
 
+    i = 0
     for line in f.readlines():
         input_batch_size, input_num_channel, image_size, output_num_channel, kernel_size_num  = map(int,line.split(","))
         device = "cpu" # for gpu it is cuda
         tensor_to_test = torch.randn(input_batch_size, input_num_channel,
                                      image_size, image_size)
-        # metrics_dict = dict()
-        # train_loader = torch.utils.data.DataLoader(
-            # datasets.MNIST('./data', train=True, download=True,
-                           # transform=transforms.Compose([
-                               # transforms.ToTensor(),
-                               # transforms.Normalize((0.1307,), (0.3081,))
-                           # ])),
-            # batch_size=64, shuffle=True)
+        
+        
+        redis_conn = redis.Redis(host='0.0.0.0')
+        redis_conn.set("max_mem_cc", 0)
+        redis_conn.set("max_mem_gpu", 0)
+        process_pid = os.getpid()
+        
+        p1 = mp.Process(target = calculate_max_memory_cc, args=(process_pid,))
+        p1.start()
 
-        # test_loader = torch.utils.data.DataLoader(
-                    # datasets.MNIST('./data', train=False,
-                                   # transform=transforms.Compose([
-                                                                  # transforms.ToTensor(),
-                                                                  # transforms.Normalize((0.1307,),
-                                                                                       # (0.3081,))
-                                                              # ])),
-                    # batch_size=64, shuffle=True)
+        p2 = mp.Process(target = calculate_max_memory_gpu, args=())
+        p2.start()
+
         model = Net(input_num_channel, output_num_channel, kernel_size_num)
         model = model.to(device)
+        forward_times = []
+        backward_times = []
         for epoch in range(4):
             tic = time.time()
             forward_pass = model(tensor_to_test)
@@ -163,8 +163,40 @@ def main():
             tic_back = time.time()
             forward_pass.backward()
             toc_back = time.time()
-            print ("Time taken for a backward = {}".format(toc_back-tic_back))
-            print ("Time taken for a forward = {}".format(toc - tic))
+
+            backward_times.append(toc_back-tic_back)
+            forward_times.append(toc-tic)
+            # print ("Time taken for a backward = {}".format(toc_back-tic_back))
+            # print ("Time taken for a forward = {}".format(toc - tic))
+
+        max_mem_cc = redis_conn.get("max_mem_cc")
+        max_mem_gpu = redis_conn.get("max_mem_gpu")
+        p1.terminate()
+        p2.terminate()
+        p1.join()
+        p2.join()
+
+        d = {
+            "parameters":{
+                "batch_size":input_batch_size, 
+                "input_channels":input_num_channel, 
+                "image_size":image_size, 
+                "output_channels":output_num_channel, 
+                "kernel_size":kernel_size_num
+            },
+            "results":{
+                "forward_times":forward_times,
+                "backward_times":backward_times,
+                "peak_cpu_mem":max_mem_cc,
+                "peak_gpu_mem":max_mem_gpu
+            }
+        }
+        json.dump(d,output_file)
+        output.write("\n")
+        i += 1
+
+        if i < 5:
+            break
 
 if __name__ == '__main__':
     main()
