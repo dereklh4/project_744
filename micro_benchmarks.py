@@ -9,8 +9,12 @@ from torchvision import datasets, transforms
 from collections import defaultdict
 import time
 #import numcompress as nc
-import multiprocess as mp
+import multiprocessing as mp
 import subprocess
+import redis
+import os
+import psutil
+
 out_file_compression = 'compression_ratio.txt'
 out_file_accuracy = 'accuracy.txt'
 out_file_loss = 'loss_per_epoch.txt'
@@ -29,7 +33,7 @@ def calculate_max_memory_gpu():
     redis_conn = redis.Redis(host='0.0.0.0')
     max_memory = 0
     while True:
-        time.sleep(0.01)
+        #time.sleep(0.01)
         sp = subprocess.Popen(
             ['nvidia-smi', '-q'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out_str = sp.communicate()
@@ -53,7 +57,7 @@ def calculate_max_memory_cc(pid):
     redis_conn = redis.Redis(host='0.0.0.0')
     max_memory = 0
     while True:
-        time.sleep(0.01)
+        #time.sleep(0.01)
         process = psutil.Process(pid)
         mem = process.memory_info().rss
         mem_in_mb = mem / float(2 ** 20)
@@ -130,7 +134,7 @@ class Net(nn.Module):
 
 def main():
     f = open("experiments.txt","r")
-    output = open("results_microbenchmarks.txt","w+")
+    output_file = open("results_microbenchmarks.txt","w+")
 
     i = 0
     for line in f.readlines():
@@ -176,7 +180,7 @@ def main():
         p1.join()
         p2.join()
 
-        d = {
+        output_dict = {
             "parameters":{
                 "batch_size":input_batch_size, 
                 "input_channels":input_num_channel, 
@@ -187,15 +191,17 @@ def main():
             "results":{
                 "forward_times":forward_times,
                 "backward_times":backward_times,
-                "peak_cpu_mem":max_mem_cc,
-                "peak_gpu_mem":max_mem_gpu
+                "peak_cpu_mem":max_mem_cc.decode("utf-8"),
+                "peak_gpu_mem":max_mem_gpu.decode("utf-8")
             }
         }
-        json.dump(d,output_file)
-        output.write("\n")
+        #import ipdb; ipdb.set_trace()
+        #json.dump(output_dict,output_file)
+        output_file.write(json.dumps(output_dict))
+        output_file.write("\n")
         i += 1
 
-        if i < 5:
+        if i > 5:
             break
 
 if __name__ == '__main__':
