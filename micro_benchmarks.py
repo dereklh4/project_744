@@ -37,7 +37,7 @@ def calculate_max_memory_gpu():
         sp = subprocess.Popen(
             ['nvidia-smi', '-q'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out_str = sp.communicate()
-        out_list = out_str[0].split('\n')
+        out_list = out_str[0].decode('utf-8').split('\n')
         out_dict = {}
         for item in out_list:
             try:
@@ -142,6 +142,7 @@ def main():
         device = "cpu" # for gpu it is cuda
         tensor_to_test = torch.randn(input_batch_size, input_num_channel,
                                      image_size, image_size)
+        tensor_to_test = tensor_to_test.to(device)
         
         
         redis_conn = redis.Redis(host='0.0.0.0')
