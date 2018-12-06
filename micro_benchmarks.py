@@ -9,7 +9,8 @@ from torchvision import datasets, transforms
 from collections import defaultdict
 import time
 #import numcompress as nc
-
+import multiprocess as mp
+import subprocess
 out_file_compression = 'compression_ratio.txt'
 out_file_accuracy = 'accuracy.txt'
 out_file_loss = 'loss_per_epoch.txt'
@@ -24,8 +25,32 @@ def generate_mask_array(array_len):
     np.random.shuffle(arr)
     return arr
 
+def calculate_max_memory_gpu():
+    redis_conn = redis.Redis(host='0.0.0.0')
+    max_memory = 0
+    while True:
+        time.sleep(0.01)
+        sp = subprocess.Popen(
+            ['nvidia-smi', '-q'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out_str = sp.communicate()
+        out_list = out_str[0].split('\n')
+        out_dict = {}
+        for item in out_list:
+            try:
+                key, val = item.split(':')
+                key, val = key.strip(), val.strip()
+                out_dict[key] = val
+            except:
+                pass
+        aa = out_dict["Used GPU Memory"]
+        if aa > max_memory:
+            redis_conn.set("max_mem_gpu", aa)
+            max_memory = aa
+
+
+
 def calculate_max_memory_cc(pid):
-    redis_conn = redis.Redis(host='0.0.0.0', port=redis_port)
+    redis_conn = redis.Redis(host='0.0.0.0')
     max_memory = 0
     while True:
         time.sleep(0.01)
