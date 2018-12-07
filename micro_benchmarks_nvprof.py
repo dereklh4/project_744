@@ -139,6 +139,8 @@ def main():
     input_batch_size = 32
     input_num_channel = 64
     image_size = 224
+    output_num_channel = 1024
+    kernel_size_num = 5
     device = "cuda" # for gpu it is cuda
     tensor_to_test = torch.randn(input_batch_size, input_num_channel,
                                  image_size, image_size)
