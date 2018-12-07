@@ -209,8 +209,8 @@ def main():
         output_file.write("\n")
         i += 1
 
-        if i > 5:
-            break
+        # if i > 5:
+            # break
 
 if __name__ == '__main__':
     main()
