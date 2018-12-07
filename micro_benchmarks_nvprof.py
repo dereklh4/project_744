@@ -168,37 +168,6 @@ def main():
             # print ("Time taken for a backward = {}".format(toc_back-tic_back))
             # print ("Time taken for a forward = {}".format(toc - tic))
 
-        max_mem_cc = redis_conn.get("max_mem_cc")
-        max_mem_gpu = redis_conn.get("max_mem_gpu")
-        p1.terminate()
-        p1.join()
-        if device == "cuda":
-                p2.terminate()
-                p2.join()
-
-        output_dict = {
-            "parameters":{
-                "batch_size":input_batch_size, 
-                "input_channels":input_num_channel, 
-                "image_size":image_size, 
-                "output_channels":output_num_channel, 
-                "kernel_size":kernel_size_num
-            },
-            "results":{
-                "forward_times":forward_times,
-                "backward_times":backward_times,
-                "peak_cpu_mem":max_mem_cc.decode("utf-8"),
-                "peak_gpu_mem":max_mem_gpu.decode("utf-8")
-            }
-        }
-        #import ipdb; ipdb.set_trace()
-        #json.dump(output_dict,output_file)
-        output_file.write(json.dumps(output_dict))
-        output_file.write("\n")
-        i += 1
-
-        # if i > 5:
-            # break
 
 if __name__ == '__main__':
     main()
