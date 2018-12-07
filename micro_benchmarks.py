@@ -183,19 +183,15 @@ def main():
                 p2.join()
 
         output_dict = {
-            "parameters":{
                 "batch_size":input_batch_size, 
                 "input_channels":input_num_channel, 
                 "image_size":image_size, 
                 "output_channels":output_num_channel, 
-                "kernel_size":kernel_size_num
-            },
-            "results":{
+                "kernel_size":kernel_size_num,
                 "forward_times":forward_times,
                 "backward_times":backward_times,
                 "peak_cpu_mem":max_mem_cc.decode("utf-8"),
                 "peak_gpu_mem":max_mem_gpu.decode("utf-8")
-            }
         }
         #import ipdb; ipdb.set_trace()
         #json.dump(output_dict,output_file)
