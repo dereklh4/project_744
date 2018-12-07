@@ -32,6 +32,7 @@ def generate_mask_array(array_len):
 def calculate_max_memory_gpu():
     redis_conn = redis.Redis(host='0.0.0.0')
     max_memory = 0
+    print ("called max mem")
     while True:
         #time.sleep(0.01)
         sp = subprocess.Popen(
@@ -46,9 +47,11 @@ def calculate_max_memory_gpu():
                 out_dict[key] = val
             except:
                 pass
-        aa = out_dict["Used GPU Memory"]
+        aa = int(out_dict["Used GPU Memory"].split()[0])
+        print (aa)
         if aa > max_memory:
             redis_conn.set("max_mem_gpu", aa)
+            print (aa)
             max_memory = aa
 
 
@@ -139,7 +142,7 @@ def main():
     i = 0
     for line in f.readlines():
         input_batch_size, input_num_channel, image_size, output_num_channel, kernel_size_num  = map(int,line.split(","))
-        device = "cpu" # for gpu it is cuda
+        device = "cuda" # for gpu it is cuda
         tensor_to_test = torch.randn(input_batch_size, input_num_channel,
                                      image_size, image_size)
         tensor_to_test = tensor_to_test.to(device)
@@ -153,14 +156,14 @@ def main():
         p1 = mp.Process(target = calculate_max_memory_cc, args=(process_pid,))
         p1.start()
 
-        p2 = mp.Process(target = calculate_max_memory_gpu, args=())
+        p2 = mp.Process(target = calculate_max_memory_gpu,)
         p2.start()
 
         model = Net(input_num_channel, output_num_channel, kernel_size_num)
         model = model.to(device)
         forward_times = []
         backward_times = []
-        for epoch in range(4):
+        for epoch in range(300):
             tic = time.time()
             forward_pass = model(tensor_to_test)
             toc = time.time()

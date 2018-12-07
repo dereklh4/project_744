@@ -135,7 +135,8 @@ def train(model, device, train_loader, optimizer, epoch):
                 # p.bias.requires_grad = False
 
         step_count += 1
-        if step_count%20==0 or step_count==1:
+        #if step_count%20==0 or step_count==1:
+        if step_count%200000==0:
             print ("Changing the parameter step_count = {}".format(step_count))
             for child in model.layer1.children():
                 array_mask = generate_mask_array(len(child.conv1))
@@ -182,7 +183,7 @@ def train(model, device, train_loader, optimizer, epoch):
         # for param in model.parameters():
             # print (param.requires_grad)
         # import ipdb; ipdb.set_trace()
-        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad,
+        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad,
                                             model.parameters()), lr=0.01) 
         optimizer.zero_grad()
         output = model(data)
@@ -256,7 +257,7 @@ def main():
         test(model, device, test_loader)
 
         
-    with open("./40pc_20_step_resnets_stats.json", 'w') as f:
+    with open("./100pc_all_step_resnets_adam_stats.json", 'w') as f:
         json.dump(metrics_dict, f, indent=4)
 
 if __name__ == '__main__':
