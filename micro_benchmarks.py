@@ -46,7 +46,7 @@ def calculate_max_memory_gpu():
                 out_dict[key] = val
             except:
                 pass
-        aa = out_dict["Used GPU Memory"]
+        aa = float(out_dict["Used GPU Memory"].split()[0])
         if aa > max_memory:
             redis_conn.set("max_mem_gpu", aa)
             max_memory = aa
@@ -152,9 +152,9 @@ def main():
         
         p1 = mp.Process(target = calculate_max_memory_cc, args=(process_pid,))
         p1.start()
-
-        p2 = mp.Process(target = calculate_max_memory_gpu, args=())
-        p2.start()
+        if device == "cuda":
+                p2 = mp.Process(target = calculate_max_memory_gpu, args=())
+                p2.start()
 
         model = Net(input_num_channel, output_num_channel, kernel_size_num)
         model = model.to(device)
@@ -177,9 +177,10 @@ def main():
         max_mem_cc = redis_conn.get("max_mem_cc")
         max_mem_gpu = redis_conn.get("max_mem_gpu")
         p1.terminate()
-        p2.terminate()
         p1.join()
-        p2.join()
+        if device == "cuda":
+                p2.terminate()
+                p2.join()
 
         output_dict = {
             "parameters":{
