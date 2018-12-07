@@ -11,7 +11,7 @@ import time
 #import numcompress as nc
 import multiprocessing as mp
 import subprocess
-import redis
+# import redis
 import os
 import psutil
 
@@ -54,7 +54,6 @@ def calculate_max_memory_gpu():
             redis_conn.set("max_mem_gpu", aa)
             print (aa)
             max_memory = aa
-
 
 
 def calculate_max_memory_cc(pid):
@@ -137,76 +136,38 @@ class Net(nn.Module):
                 # 100. * batch_idx / len(train_loader), loss.item()))
 
 def main():
-    f = open("experiments.txt","r")
-    output_file = open("results_microbenchmarks.txt","w+")
-
-    i = 0
-    for line in f.readlines():
-        input_batch_size, input_num_channel, image_size, output_num_channel, kernel_size_num  = map(int,line.split(","))
-        device = "cuda" # for gpu it is cuda
-        tensor_to_test = torch.randn(input_batch_size, input_num_channel,
-                                     image_size, image_size)
-        tensor_to_test = tensor_to_test.to(device)
+    input_batch_size = 32
+    input_num_channel = 64
+    image_size = 224
+    output_num_channel = 1024
+    kernel_size_num = 3
+    device = "cuda" # for gpu it is cuda
+    tensor_to_test = torch.randn(input_batch_size, input_num_channel,
+                                 image_size, image_size)
+    tensor_to_test = tensor_to_test.to(device)
+    process_pid = os.getpid()
         
-        
-        redis_conn = redis.Redis(host='0.0.0.0')
-        redis_conn.set("max_mem_cc", 0)
-        redis_conn.set("max_mem_gpu", 0)
-        process_pid = os.getpid()
-        
-        p1 = mp.Process(target = calculate_max_memory_cc, args=(process_pid,))
-        p1.start()
-        p2 = mp.Process(target = calculate_max_memory_gpu,)
-        p2.start()
-        if device == "cuda":
-                p2 = mp.Process(target = calculate_max_memory_gpu, args=())
-                p2.start()
 
-        model = Net(input_num_channel, output_num_channel, kernel_size_num)
-        model = model.to(device)
-        forward_times = []
-        backward_times = []
-        for epoch in range(300):
-            tic = time.time()
-            forward_pass = model(tensor_to_test)
-            toc = time.time()
+    model = Net(input_num_channel, output_num_channel, kernel_size_num)
+    model = model.to(device)
+    forward_times = []
+    backward_times = []
+    for epoch in range(3):
+        tic = time.time()
+        forward_pass = model(tensor_to_test)
+        toc = time.time()
 
-            tic_back = time.time()
-            forward_pass.backward()
-            toc_back = time.time()
+        tic_back = time.time()
+        with torch.cuda.profiler.profile():
+            with torch.autograd.profiler.emit_nvtx():
+                forward_pass.backward()
+        toc_back = time.time()
 
-            backward_times.append(toc_back-tic_back)
-            forward_times.append(toc-tic)
+        backward_times.append(toc_back-tic_back)
+        forward_times.append(toc-tic)
             # print ("Time taken for a backward = {}".format(toc_back-tic_back))
             # print ("Time taken for a forward = {}".format(toc - tic))
 
-        max_mem_cc = redis_conn.get("max_mem_cc")
-        max_mem_gpu = redis_conn.get("max_mem_gpu")
-        p1.terminate()
-        p1.join()
-        if device == "cuda":
-                p2.terminate()
-                p2.join()
-
-        output_dict = {
-                "batch_size":input_batch_size, 
-                "input_channels":input_num_channel, 
-                "image_size":image_size, 
-                "output_channels":output_num_channel, 
-                "kernel_size":kernel_size_num,
-                "forward_times":forward_times,
-                "backward_times":backward_times,
-                "peak_cpu_mem":max_mem_cc.decode("utf-8"),
-                "peak_gpu_mem":max_mem_gpu.decode("utf-8")
-        }
-        #import ipdb; ipdb.set_trace()
-        #json.dump(output_dict,output_file)
-        output_file.write(json.dumps(output_dict))
-        output_file.write("\n")
-        i += 1
-
-        # if i > 5:
-            # break
 
 if __name__ == '__main__':
     main()
