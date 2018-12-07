@@ -15,13 +15,8 @@ import redis
 import os
 import psutil
 
-out_file_compression = 'compression_ratio.txt'
-out_file_accuracy = 'accuracy.txt'
-out_file_loss = 'loss_per_epoch.txt'
 
-metrics_dict = defaultdict(list)
-compression_dict = defaultdict(list)
-percentage_of_layers = 1.0
+
 def generate_mask_array(array_len):
     num_ones = int(array_len * percentage_of_layers)
     num_zeros = array_len - num_ones
@@ -144,6 +139,9 @@ def main():
     for line in f.readlines():
         input_batch_size, input_num_channel, image_size, output_num_channel, kernel_size_num  = map(int,line.split(","))
         device = "cuda" # for gpu it is cuda
+        use_cuda_flag = False
+        if device == 'cuda':
+            use_cuda_flag = True
         tensor_to_test = torch.randn(input_batch_size, input_num_channel,
                                      image_size, image_size)
         tensor_to_test = tensor_to_test.to(device)
@@ -168,11 +166,21 @@ def main():
         backward_times = []
         for epoch in range(300):
             tic = time.time()
-            forward_pass = model(tensor_to_test)
+            with torch.autograd.profiler.profile(use_cuda=use_cuda_flag) as f_prof:
+                forward_pass = model(tensor_to_test)
+            out_table = f_prof.table()
+            with open("{}_{}.txt".format(out_forward_file, count), 'w') as fout:
+                fout.write(out_table)
+                
             toc = time.time()
 
             tic_back = time.time()
-            forward_pass.backward()
+            with torch.autograd.profiler.profile(use_cuda=use_cuda_flag) as b_prof:
+                
+                forward_pass.backward()
+            out_table = b_prof.table()
+            with open("{}_{}.txt".format(out_backward_file, count), 'w') as fout:
+                fout.write(out_table)
             toc_back = time.time()
 
             backward_times.append(toc_back-tic_back)
