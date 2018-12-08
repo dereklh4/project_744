@@ -136,7 +136,7 @@ def train(model, device, train_loader, optimizer, epoch):
 
         step_count += 1
         #if step_count%20==0 or step_count==1:
-        if step_count%200000==0:
+        if step_count%200==0:
             print ("Changing the parameter step_count = {}".format(step_count))
             for child in model.layer1.children():
                 array_mask = generate_mask_array(len(child.conv1))
@@ -229,7 +229,7 @@ def main():
     device = "cuda"
 
     transform_train = transforms.Compose([
-    transforms.RandomCrop(32, padding=4),
+    transforms.Resize(224),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
@@ -245,7 +245,9 @@ def main():
     testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
 
-    model = ResNet(BasicBlock, [2,2,2,2])
+    # model = ResNet(BasicBlock, [2,2,2,2])
+    model = models.resnet18(pretrained=True)
+    model.fc = nn.Linear(in_features=512, out_features=10,bias=True)
     model = model.to(device)
     optimizer = None
     for epoch in range(30):
@@ -257,7 +259,7 @@ def main():
         test(model, device, test_loader)
 
         
-    with open("./100pc_all_step_resnets_adam_stats.json", 'w') as f:
+    with open("./40pc_change_20_resnet_adam_stats.json", 'w') as f:
         json.dump(metrics_dict, f, indent=4)
 
 if __name__ == '__main__':
