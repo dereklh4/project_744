@@ -117,7 +117,7 @@ class ResNet(nn.Module):
         out = F.log_softmax(out, dim=1)
         return out
 
-def train(model, device, train_loader, optimizer, epoch):
+def train(model, device, train_loader, optimizer, epoch, criterion):
     global metrics_dict
     model.train()
     step_count = 0
@@ -188,7 +188,7 @@ def train(model, device, train_loader, optimizer, epoch):
                                             model.parameters()), lr=0.01) 
         optimizer.zero_grad()
         output = model(data)
-        loss = F.nll_loss(output, target)
+        loss = criterion(output, target)
         loss.backward()
         temp_array = np.random.randint(0, high=2, size=10)
         
@@ -228,7 +228,7 @@ def test(model, device, test_loader):
 
 def main():
     device = "cuda"
-
+    criterion = nn.CrossEntropyLoss()
     transform_train = transforms.Compose([
     transforms.Resize(224),
     transforms.RandomHorizontalFlip(),
@@ -253,7 +253,7 @@ def main():
     optimizer = None
     for epoch in range(30):
         tic = time.time()
-        train(model, device, train_loader, optimizer, epoch)
+        train(model, device, train_loader, optimizer, epoch, criterion)
         toc = time.time()
         print ("Time taken for an epoch = {}".format(toc-tic))
         metrics_dict["Time per epoch"].append(toc-tic)
