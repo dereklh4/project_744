@@ -15,7 +15,7 @@ import time
 from collections import defaultdict
 metrics_dict = defaultdict(list)
 compression_dict = defaultdict(list)
-percentage_of_layers = 0.4
+percentage_of_layers = 1.0
 
 def generate_mask_array(array_len):
     num_ones = int(array_len * percentage_of_layers)
@@ -283,7 +283,7 @@ def main():
         test(model, device, test_loader)
 
         
-    with open("./40pc_change_20_resnet_adam_stats.json", 'w') as f:
+    with open("./100pc_no_change_resnet_adam_stats.json", 'w') as f:
         json.dump(metrics_dict, f, indent=4)
 
 if __name__ == '__main__':
