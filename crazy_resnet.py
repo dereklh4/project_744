@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
+from torchvision import models
 from torchvision import datasets, transforms
 import numpy as np
 import time
