@@ -1,9 +1,9 @@
 
 batch_range = [32,64,128]
-input_channels_range = [5,12,1024,128,256,64]
+input_channels_range = [3,32,64,128,256,512]
 image_size_range = [256]
-output_channels_range = [5,12,1024,128,256,64]
-kernel_size_range = (1,7,2) #start, stop, step
+output_channels_range = [32,64,128,256,512]
+kernel_size_range = (1,8,2) #start, stop, step
 
 
 output_file = open("experiments.txt","w+")
