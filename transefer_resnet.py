@@ -15,7 +15,7 @@ import time
 from collections import defaultdict
 metrics_dict = defaultdict(list)
 compression_dict = defaultdict(list)
-percentage_of_layers = 1.0
+percentage_of_layers = 0.4
 
 def generate_mask_array(array_len):
     num_ones = int(array_len * percentage_of_layers)
@@ -25,97 +25,6 @@ def generate_mask_array(array_len):
     return arr
 
 
-class BasicBlock(nn.Module):
-    expansion = 1
-
-    def __init__(self, in_planes, planes, stride=1):
-        super(BasicBlock, self).__init__()
-        num_filter = int(planes/16)
-        self.conv1 = nn.ModuleList([
-            nn.Conv2d(in_planes, 16, kernel_size=3, stride=stride, padding=1, bias=False) for i in range(num_filter)])
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.ModuleList([
-            nn.Conv2d(planes, 16, kernel_size=3, stride=1, padding=1, bias=False) for i in range(num_filter)])
-        self.bn2 = nn.BatchNorm2d(planes)
-
-        self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion*planes:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(self.expansion*planes)
-            )
-
-    def forward(self, x):
-        out = [b(x) for b in self.conv1]
-        out = torch.cat(out, dim=1)
-        out = F.relu(self.bn1(out))
-        out = [b(out) for b in self.conv2]
-        out = torch.cat(out, dim=1)
-        out = self.bn2(out)
-        out += self.shortcut(x)
-        out = F.relu(out)
-        return out
-
-
-class Bottleneck(nn.Module):
-    expansion = 4
-
-    def __init__(self, in_planes, planes, stride=1):
-        super(Bottleneck, self).__init__()
-        self.conv1 = nn.Conv2d(in_planes, planes, kernel_size=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
-        self.bn2 = nn.BatchNorm2d(planes)
-        self.conv3 = nn.Conv2d(planes, self.expansion*planes, kernel_size=1, bias=False)
-        self.bn3 = nn.BatchNorm2d(self.expansion*planes)
-
-        self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion*planes:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(self.expansion*planes)
-            )
-
-    def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = F.relu(self.bn2(self.conv2(out)))
-        out = self.bn3(self.conv3(out))
-        out += self.shortcut(x)
-        out = F.relu(out)
-        return out
-
-class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10):
-        super(ResNet, self).__init__()
-        self.in_planes = 64
-
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(64)
-        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
-        self.linear = nn.Linear(512*block.expansion, num_classes)
-
-    def _make_layer(self, block, planes, num_blocks, stride):
-        strides = [stride] + [1]*(num_blocks-1)
-        layers = []
-        for stride in strides:
-            layers.append(block(self.in_planes, planes, stride))
-            self.in_planes = planes * block.expansion
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
-        out = self.layer4(out)
-        out = F.avg_pool2d(out, 4)
-        out = out.view(out.size(0), -1)
-        out = self.linear(out)
-        out = F.log_softmax(out, dim=1)
-        return out
 
 def train(model, device, train_loader, optimizer, epoch, criterion):
     global metrics_dict
@@ -187,18 +96,22 @@ def train(model, device, train_loader, optimizer, epoch, criterion):
                 print ("Idx = {}, val = {}".format(idx, val))
                 if val == 0:
                     if idx == 0:
+                        print ("Turning gradients off for layer 1")
                         for child in model.layer1.children():
                             for param in child.parameters():
                                 param.requires_grad = False
                     if idx == 1:
+                        print ("Turning gradients off for layer 2")
                         for child in model.layer2.children():
                             for param in child.parameters():
                                 param.requires_grad = False
                     if idx == 2:
+                        print ("Turning gradients off for layer 3")
                         for child in model.layer3.children():
                             for param in child.parameters():
                                 param.requires_grad = False
                     if idx == 3:
+                        print ("Turning gradients off for layer 4")
                         for child in model.layer4.children():
                             for param in child.parameters():
                                 param.requires_grad = False
@@ -206,8 +119,9 @@ def train(model, device, train_loader, optimizer, epoch, criterion):
         # for param in model.parameters():
             # print (param.requires_grad)
         # import ipdb; ipdb.set_trace()
-        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad,
-                                            model.parameters()), lr=0.01) 
+        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad,
+                                            model.parameters()), lr=0.01,
+                                    momentum = 0.9)  
         optimizer.zero_grad()
         output = model(data)
         loss = criterion(output, target)
@@ -283,7 +197,7 @@ def main():
         test(model, device, test_loader)
 
         
-    with open("./100pc_no_change_resnet_adam_stats.json", 'w') as f:
+    with open("./40pc_resnet_transfer_sgd.json", 'w') as f:
         json.dump(metrics_dict, f, indent=4)
 
 if __name__ == '__main__':
