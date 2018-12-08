@@ -189,19 +189,19 @@ def train(model, device, train_loader, optimizer, epoch, criterion):
                     if idx == 0:
                         for child in model.layer1.children():
                             for param in child.parameters():
-                                param.grad = False
+                                param.requires_grad = False
                     if idx == 1:
                         for child in model.layer2.children():
                             for param in child.parameters():
-                                param.grad = False
+                                param.requires_grad = False
                     if idx == 2:
                         for child in model.layer3.children():
                             for param in child.parameters():
-                                param.grad = False
+                                param.requires_grad = False
                     if idx == 3:
                         for child in model.layer4.children():
                             for param in child.parameters():
-                                param.grad = False
+                                param.requires_grad = False
             
         # for param in model.parameters():
             # print (param.requires_grad)
