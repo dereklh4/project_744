@@ -130,7 +130,15 @@ def read_prof(fname, mem_unit, t_unit, flops_unit):
 
 def read_torch_prof(fname, raw=False):
     SCALE = 1000
-    lines = open(fname).readlines()[3:]
+    lines = iter(open(fname).readlines())
+    l = next(lines)
+    meta = {}
+    while '------' not in l:
+        k, v = eval(l)
+        meta[k] = v
+        l = next(lines)
+    next(lines)
+    next(lines)
     #get the first 3 items in each row
     sre = re.compile('\\s\\s+')
     tuples = [tuple([s.strip() for s in sre.split(l)[:3]]) for l in lines]
