@@ -124,7 +124,7 @@ def train(model, device, train_loader, optimizer, epoch, criterion):
         output = model(data)
         # temp_loss = F.log_softmax(output, dim=1)
         # loss = F.nll_loss(temp_loss, target)
-        # loss = criterion(output, target)
+        loss = criterion(output, target)
         loss.backward()
         temp_array = np.random.randint(0, high=2, size=10)
         
