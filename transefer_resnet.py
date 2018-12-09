@@ -15,7 +15,7 @@ import time
 from collections import defaultdict
 metrics_dict = defaultdict(list)
 compression_dict = defaultdict(list)
-percentage_of_layers = 0.4
+percentage_of_layers = 1.0
 
 def generate_mask_array(array_len):
     num_ones = int(array_len * percentage_of_layers)
@@ -165,27 +165,43 @@ def test(model, device, test_loader):
 def main():
     device = "cuda"
     criterion = nn.CrossEntropyLoss().to(device)
+    # for cifar
+    # transform_train = transforms.Compose([
+    # transforms.Resize(224),
+    # transforms.RandomHorizontalFlip(),
+    # transforms.ToTensor(),
+    # transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+# ])
+    # minc transform
     transform_train = transforms.Compose([
-    transforms.Resize(224),
-    transforms.RandomHorizontalFlip(),
-    transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-])
+        transforms.RandomCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+    ])
+    # transform_test = transforms.Compose([
+    # transforms.Resize(224),
+    # transforms.ToTensor(),
+    # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+# ])
+    # minc transform
     transform_test = transforms.Compose([
-    transforms.Resize(224),
-    transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-])
-
-    trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_train)
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize((0.4850, 0.4560, 0.4060), (0.2290, 0.2240, 0.2250)),
+    ])
+    trainset = torchvision.datasets.ImageFolder(
+            '/users/saurabh/disk_mount/minc-2500/train', transform=transform_train)
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True, num_workers=2)
 
-    testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
+    testset = torchvision.datasets.CIFAR10(
+        '/users/saurabh/disk_mount/minc-2500/val', transform=transform_test)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
 
     # model = ResNet(BasicBlock, [2,2,2,2])
     model = models.resnet18(pretrained=True)
-    model.fc = nn.Linear(in_features=512, out_features=10,bias=True)
+    model.fc = nn.Linear(in_features=512, out_features=23,bias=True)
     model = model.to(device)
     optimizer = None
     for epoch in range(30):
@@ -197,7 +213,7 @@ def main():
         test(model, device, test_loader)
 
         
-    with open("./40pc_resnet_transfer_sgd.json", 'w') as f:
+    with open("./100pc_resnet_minc_transfer_sgd_stat.json", 'w') as f:
         json.dump(metrics_dict, f, indent=4)
 
 if __name__ == '__main__':
