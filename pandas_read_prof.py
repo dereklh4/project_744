@@ -40,7 +40,6 @@ cell_split = re.compile('')
 val_unit_re = re.compile('(\d*\.?\d+)([a-zA-Z]+)')
 
 def val_unit(cell):
-    #print(cell)
     cell  = cell.strip()
     m = val_unit_re.search(cell)
     if m != None:
@@ -64,7 +63,6 @@ def parse_line(line, mem_unit, t_unit, flops_unit):
     first, second = first.split()
     cells.insert(0,second)
     cells.insert(0,first)
-    print(cells)
 
     mem_cells = [1,2,3]
     t_cells = [4,5,6]
@@ -80,7 +78,6 @@ def parse_line(line, mem_unit, t_unit, flops_unit):
     cells[7] = cells[7].split()[0].strip()
     #ops 
     cell = cells[8].split()[0].strip()
-    print(cell)
     if cell != '0':
         val, unit = val_unit(cell)
         cells[8] = convert_flops(val, unit, flops_unit)
@@ -141,7 +138,7 @@ def read_torch_prof(fname, raw=False):
     next(lines)
     #get the first 3 items in each row
     sre = re.compile('\\s\\s+')
-    tuples = [tuple([s.strip() for s in sre.split(l)[:3]]) for l in lines]
+    tuples = [tuple([s.strip() for s in sre.split(x)[:3]]) for x in lines]
 
     #return a raw dataframe
     if raw:
@@ -176,7 +173,7 @@ def read_torch_prof(fname, raw=False):
         'gpu_avg' : [],
         'gpu_total' : [],
         'ncalls' : [],
-        'total_time' : []
+        'total_time' : [],
     }
 
     for op in op_names:
@@ -197,8 +194,11 @@ def read_torch_prof(fname, raw=False):
         data['ncalls'].append(len(row['gpu_time']))
         data['total_time'].append(row['gpu_time'].sum() + row['cpu_time'].sum() )
 
+    #mark as being a forward pass or backward pass
+    is_forward =  'forward' in fname.name
+    data['forward'] = [is_forward] * len(op_names)
 
-    return pd.DataFrame(data)
+    return (meta, pd.DataFrame(data))
 
         
 
