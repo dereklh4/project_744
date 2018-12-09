@@ -195,7 +195,7 @@ def main():
             '/users/saurabh/disk_mount/minc-2500/train', transform=transform_train)
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True, num_workers=2)
 
-    testset = torchvision.datasets.CIFAR10(
+    testset = torchvision.datasets.ImageFolder(
         '/users/saurabh/disk_mount/minc-2500/val', transform=transform_test)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
 
