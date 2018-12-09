@@ -213,7 +213,7 @@ def main():
         test(model, device, test_loader)
 
         
-    with open("./40pc_200_step_change_resnet_minc_transfer_sgd_stat.json", 'w') as f:
+    with open("./40pc_400_step_change_resnet_minc_transfer_sgd_stat.json", 'w') as f:
         json.dump(metrics_dict, f, indent=4)
 
 if __name__ == '__main__':
