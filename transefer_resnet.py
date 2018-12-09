@@ -44,7 +44,7 @@ def train(model, device, train_loader, optimizer, epoch, criterion):
 
         step_count += 1
         #if step_count%20==0 or step_count==1:
-        if step_count%200==0 or step_count==1:
+        if step_count%400==0 or step_count==1:
             # print ("Changing the parameter step_count = {}".format(step_count))
             # for child in model.layer1.children():
                 # array_mask = generate_mask_array(len(child.conv1))
