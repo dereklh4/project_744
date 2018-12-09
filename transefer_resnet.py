@@ -24,8 +24,6 @@ def generate_mask_array(array_len):
     np.random.shuffle(arr)
     return arr
 
-
-
 def train(model, device, train_loader, optimizer, epoch, criterion):
     global metrics_dict
     model.train()
@@ -124,7 +122,9 @@ def train(model, device, train_loader, optimizer, epoch, criterion):
                                     momentum = 0.9)  
         optimizer.zero_grad()
         output = model(data)
-        loss = criterion(output, target)
+        # temp_loss = F.log_softmax(output, dim=1)
+        # loss = F.nll_loss(temp_loss, target)
+        # loss = criterion(output, target)
         loss.backward()
         temp_array = np.random.randint(0, high=2, size=10)
         
@@ -164,7 +164,7 @@ def test(model, device, test_loader):
 
 def main():
     device = "cuda"
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss().to(device)
     transform_train = transforms.Compose([
     transforms.Resize(224),
     transforms.RandomHorizontalFlip(),
@@ -178,7 +178,7 @@ def main():
 ])
 
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_train)
-    train_loader = torch.utils.data.DataLoader(trainset, batch_size=128, shuffle=True, num_workers=2)
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True, num_workers=2)
 
     testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
