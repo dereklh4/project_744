@@ -1,0 +1,19 @@
+('batch_size', 64)
+('input_channels', 16)
+('image_size', 256)
+('output_channels', 32)
+('kernel_size', 7)
+---------------------  ---------------  ---------------  ---------------  ---------------  ---------------
+Name                          CPU time        CUDA time            Calls        CPU total       CUDA total
+---------------------  ---------------  ---------------  ---------------  ---------------  ---------------
+conv2d                       462.738us      33867.455us                1        462.738us      33867.455us
+_th_get_device                 9.760us          9.408us                1          9.760us          9.408us
+convolution                  429.695us      33837.184us                1        429.695us      33837.184us
+_th_get_device                 3.764us          4.000us                1          3.764us          4.000us
+_convolution                 406.965us      33816.961us                1        406.965us      33816.961us
+_th_get_device                 4.133us          3.808us                1          4.133us          3.808us
+tensor                        25.912us         22.464us                1         25.912us         22.464us
+cudnn_convolution            324.197us      33739.390us                1        324.197us      33739.390us
+sum                        34702.983us       1320.225us                1      34702.983us       1320.225us
+_th_get_device                 3.975us          1.568us                1          3.975us          1.568us
+_sum                       34670.844us       1311.264us                1      34670.844us       1311.264us

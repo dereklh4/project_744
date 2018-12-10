@@ -1,0 +1,22 @@
+('batch_size', 4)
+('input_channels', 20)
+('image_size', 256)
+('output_channels', 16)
+('kernel_size', 3)
+-----------------------------------  ---------------  ---------------  ---------------  ---------------  ---------------
+Name                                        CPU time        CUDA time            Calls        CPU total       CUDA total
+-----------------------------------  ---------------  ---------------  ---------------  ---------------  ---------------
+_th_get_device                              10.955us         10.592us                1         10.955us         10.592us
+torch::autograd::GraphRoot                  25.906us          8.352us                1         25.906us          8.352us
+_th_get_device                              10.834us          8.704us                1         10.834us          8.704us
+SumBackward0                               110.605us        100.416us                1        110.605us        100.416us
+expand                                      64.826us         60.160us                1         64.826us         60.160us
+_th_get_device                               5.804us          5.632us                1          5.804us          5.632us
+CudnnConvolutionBackward                   481.488us       2019.040us                1        481.488us       2019.040us
+cudnn_convolution_backward                 437.003us       1981.696us                1        437.003us       1981.696us
+_th_get_device                               5.631us          1.600us                1          5.631us          1.600us
+_th_get_device                               5.077us          1.600us                1          5.077us          1.600us
+torch::autograd::AccumulateGrad            115.815us          7.840us                1        115.815us          7.840us
+clone                                       97.243us          4.608us                1         97.243us          4.608us
+torch::autograd::AccumulateGrad             45.900us          6.944us                1         45.900us          6.944us
+clone                                       33.729us          3.744us                1         33.729us          3.744us

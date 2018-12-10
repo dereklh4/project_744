@@ -1,0 +1,20 @@
+('batch_size', 16)
+('input_channels', 32)
+('image_size', 256)
+('output_channels', 16)
+('kernel_size', 1)
+-----------------------------------  ---------------  ---------------  ---------------  ---------------  ---------------
+Name                                        CPU time        CUDA time            Calls        CPU total       CUDA total
+-----------------------------------  ---------------  ---------------  ---------------  ---------------  ---------------
+_th_get_device                               9.634us          9.344us                1          9.634us          9.344us
+torch::autograd::GraphRoot                  11.256us          5.984us                1         11.256us          5.984us
+_th_get_device                               6.532us          5.184us                1          6.532us          5.184us
+SumBackward0                                55.348us         53.312us                1         55.348us         53.312us
+expand                                      35.257us         33.728us                1         35.257us         33.728us
+_th_get_device                              13.983us         13.536us                1         13.983us         13.536us
+CudnnConvolutionBackward                   316.337us       5568.288us                1        316.337us       5568.288us
+cudnn_convolution_backward                 289.970us       5547.616us                1        289.970us       5547.616us
+_th_get_device                               4.615us          1.568us                1          4.615us          1.568us
+_th_get_device                               4.443us          1.632us                1          4.443us          1.632us
+torch::autograd::AccumulateGrad             39.656us          4.704us                1         39.656us          4.704us
+torch::autograd::AccumulateGrad             15.080us          3.904us                1         15.080us          3.904us
