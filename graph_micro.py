@@ -8,6 +8,7 @@ from argparse import ArgumentParser
 import sys
 
 
+
 argp = ArgumentParser()
 argp.add_argument('--output_channels', type=int, default=None)
 argp.add_argument('--kernel_size', type=int, default=None)
@@ -65,7 +66,8 @@ def main():
     ax.set_title(" ".join(title))
     ax.legend()
     fig.tight_layout()
-    
+    tlt = "".join(title).replace(' = ', '')
+    #fig.savefig('./graphs/' + tlt + "_graph.pdf")   
     plt.show()
 
 
@@ -105,6 +107,7 @@ def read_data(dir_name):
     
     df = pd.DataFrame(agg_data).groupby( ['output_channels', 'kernel_size', 'input_channels', 'batch_size', 'image_size', 'forward'], as_index=False).mean()
 
+    df['per_example'] = df.time / df.batch_size
     return df
     
 
